@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuHandler : MonoBehaviour
 {
-
     [SerializeField] private NetworkManagerCustom _networkManager = null;
 
     [Header("UI")]
