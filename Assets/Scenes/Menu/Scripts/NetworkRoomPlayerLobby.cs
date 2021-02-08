@@ -121,8 +121,7 @@ public class NetworkRoomPlayerLobby : NetworkBehaviour
 		Room.StartGame();
 	}
 
-	[Command]
-	public void CmdLeaveLobby()
+	public void LeaveLobby()
 	{
 		if(isLeader)
 		{
@@ -134,6 +133,6 @@ public class NetworkRoomPlayerLobby : NetworkBehaviour
 			Room.RoomPlayers.Clear();
 		}
 
-		// set landing panel to active
+		// destroy networkmanager
 	}
 }

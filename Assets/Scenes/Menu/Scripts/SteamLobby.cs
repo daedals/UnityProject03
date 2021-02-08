@@ -7,8 +7,6 @@ using Steamworks;
 public class SteamLobby : MonoBehaviour
 {
     [SerializeField] private NetworkManagerCustom _networkManager = null;
-
-    [Header("UI")]
     [SerializeField] private GameObject _landingPagePanel = null;
 
     protected Callback<LobbyCreated_t> lobbyCreated;
@@ -19,9 +17,13 @@ public class SteamLobby : MonoBehaviour
 
     private void Start()
     {
-        if (!SteamManager.Initialized) return;
+        if (!SteamManager.Initialized)
+        {
+            return;
+        }
 
         _landingPagePanel.transform.Find("HostOnSteam").gameObject.SetActive(true);
+
 
         lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
@@ -30,7 +32,7 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
-        _landingPagePanel.SetActive(false);
+        _networkManager.gameObject.SetActive(true);
 
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, _networkManager.maxConnections);
     }
@@ -39,7 +41,7 @@ public class SteamLobby : MonoBehaviour
     {
         if (callback.m_eResult != EResult.k_EResultOK)
         {
-            _landingPagePanel.SetActive(true);
+            Debug.Log("Steam Lobby Creation failed");
             return;
         }
 
@@ -61,7 +63,5 @@ public class SteamLobby : MonoBehaviour
         string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
         _networkManager.networkAddress = hostAddress;
         _networkManager.StartClient();
-
-        _landingPagePanel.SetActive(false);
     }
 }

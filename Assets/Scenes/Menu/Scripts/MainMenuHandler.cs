@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuHandler : MonoBehaviour
 {
+    
     [SerializeField] private NetworkManagerCustom _networkManager = null;
 
     [Header("UI")]
@@ -15,7 +16,6 @@ public class MainMenuHandler : MonoBehaviour
     public void HostLobby()
     {
         _networkManager.StartHost();
-
         _landingPagePanel.SetActive(false);
     }
 
@@ -23,15 +23,5 @@ public class MainMenuHandler : MonoBehaviour
     {
         Debug.Log("Exiting Game");
         Application.Quit();
-    }
-
-    // currently not used, because roomplayer has no access
-    public void GoBackAndReactivateLandingPanel()
-    {
-        _landingPagePanel.SetActive(true);
-
-        if (NetworkServer.active) _networkManager.StopServer();
-        
-        _networkManager.StopClient();
     }
 }
