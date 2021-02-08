@@ -11,7 +11,8 @@ public class PlayerActionProcessor : NetworkBehaviour
     [SerializeField] GameObject _projectileSpawn = null;
 
     public event Action OnProjectileSpawned;
-    public event Action OnProjectileFired;
+
+    private Projectile _lastSpawnedProjectile = null;
 
 	public override void OnStartAuthority()
 	{
@@ -26,13 +27,14 @@ public class PlayerActionProcessor : NetworkBehaviour
     private void SetLMBState(bool lmbState)
     {
         if(lmbState) SpawnProjectile();
-        else FireProjectile();
+        else CmdFireProjectile();
     }
-
-    private void FireProjectile() => OnProjectileFired?.Invoke();
 
     [Command]
     private void CmdSpawnProjectile() => SpawnProjectile();
+
+    [Command]
+    private void CmdFireProjectile() => FireProjectile();
 
     #endregion
 
@@ -51,7 +53,14 @@ public class PlayerActionProcessor : NetworkBehaviour
 
         NetworkServer.Spawn(projectileInstance);
 
+        _lastSpawnedProjectile = projectile;
+
         OnProjectileSpawned?.Invoke();
+    }
+
+    private void FireProjectile()
+    {
+        _lastSpawnedProjectile.Fire();
     }
 
     #endregion
