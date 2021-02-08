@@ -16,12 +16,14 @@ public class MainMenuHandler : MonoBehaviour
     public void HostLobby()
     {
         _networkManager.StartHost();
+
         _landingPagePanel.SetActive(false);
     }
 
     public void ButtonExit()
     {
         Debug.Log("Exiting Game");
+        
         Application.Quit();
     }
 }
