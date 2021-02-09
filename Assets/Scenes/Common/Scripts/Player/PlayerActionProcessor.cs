@@ -7,12 +7,12 @@ using System;
 public class PlayerActionProcessor : NetworkBehaviour
 {
     [Header("References")]
-    [SerializeField] GameObject _projectilePrefab = null;
-    [SerializeField] GameObject _projectileSpawn = null;
+    [SerializeField] private Transform _projectileSpawn = null;
 
-    public event Action OnProjectileSpawned;
+    public event Action<PlayerActionProcessor> OnProjectileSpawnRequested;
+    public event Action<PlayerActionProcessor> OnProjectileFireRequested;
 
-    private Projectile _lastSpawnedProjectile = null;
+    public Transform ProjectileSpawn { get { return _projectileSpawn; } }
 
 	public override void OnStartAuthority()
 	{
@@ -21,47 +21,17 @@ public class PlayerActionProcessor : NetworkBehaviour
         PlayerInputHandler.OnLMB += SetLMBState;
 	}
 
-    #region Client
-
     [Client]
     private void SetLMBState(bool lmbState)
     {
-        if(lmbState) SpawnProjectile();
-        else CmdFireProjectile();
+        if(lmbState) CmdRequestProjectileSpawn();
+        else CmdRequestProjectileFire();
     }
 
     [Command]
-    private void CmdSpawnProjectile() => SpawnProjectile();
+    private void CmdRequestProjectileSpawn() => OnProjectileSpawnRequested?.Invoke(this);
 
     [Command]
-    private void CmdFireProjectile() => FireProjectile();
+    private void CmdRequestProjectileFire() => OnProjectileFireRequested?.Invoke(this);
 
-    #endregion
-
-    #region Server
-
-    [Server]
-    private void SpawnProjectile()
-    {
-        GameObject projectileInstance = Instantiate(
-            _projectilePrefab, 
-            _projectileSpawn.transform.position, 
-            _projectileSpawn.transform.rotation);
-
-        Projectile projectile = projectileInstance.GetComponent<Projectile>();
-        projectile.SetReferences(_projectileSpawn, this);
-
-        NetworkServer.Spawn(projectileInstance);
-
-        _lastSpawnedProjectile = projectile;
-
-        OnProjectileSpawned?.Invoke();
-    }
-
-    private void FireProjectile()
-    {
-        _lastSpawnedProjectile.Fire();
-    }
-
-    #endregion
 }

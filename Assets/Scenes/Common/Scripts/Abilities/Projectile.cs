@@ -10,52 +10,38 @@ public class Projectile : NetworkBehaviour
     [SerializeField] private float _speed = 5f;
     [SerializeField] private float _lifeTime = 5f;
 
-    private bool _fired;
+    public bool Fired { get; private set; }
+
     private Vector3 _fireDirection;
-    private GameObject _spawn;
-
-    [Server]
-    public void SetReferences(GameObject spawn, PlayerActionProcessor processor)
-    {
-        _spawn = spawn;
-    }
 
 
-    [ServerCallback]
-    private void OnEnable()
-    {
-        _fired = false;
-    }
-
-    [Server]
-    private void Update()
-    {
-        if (!_fired)
-        {
-            transform.position = _spawn.transform.position;
-            transform.rotation = _spawn.transform.rotation;
-        }
-        else
-        {
-            transform.position += _fireDirection * _speed * Time.deltaTime;
-        }
-    }
-
-    [Server]
-    public void Fire()
-    {
-        _fired = true;
-        _fireDirection = _spawn.transform.forward;
-        // StartCoroutine(DestroySelfAfterSeconds(_lifeTime));
-        Destroy(gameObject, _lifeTime);
-    }
-
-    [Server]
     private void OnDestroy()
     {
         Debug.Log("Projectile was destroyed");
     }
 
+    [Server]
+    public void Fire(Vector3 fireDirection)
+    {
+        Fired = true;
+        _fireDirection = fireDirection;
+        StartCoroutine(UpdatePosition());
+        Destroy(gameObject, _lifeTime);
+    }
+
+    [Server]
+    IEnumerator UpdatePosition()
+    {
+        while (true)
+        {
+            transform.position += _fireDirection * _speed * Time.deltaTime;
+
+            yield return 0;
+        }
+    }
+
+
+    // currently not used, serves as code reference (pls fix)
     [Server]
     IEnumerator DestroySelfAfterSeconds(float lifeTime)
     {

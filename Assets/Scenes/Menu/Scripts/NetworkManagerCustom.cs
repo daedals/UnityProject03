@@ -22,6 +22,7 @@ public class NetworkManagerCustom : NetworkManager
     [SerializeField] private NetworkGamePlayerLobby _gamePlayerPrefab = null;
     [SerializeField] private GameObject _playerSpawnSystem = null;
     [SerializeField] private GameObject _roundSystem = null;
+    [SerializeField] private GameObject _serverProjectileHandler = null;
 
     private MapHandler _mapHandler;
 
@@ -165,7 +166,12 @@ public class NetworkManagerCustom : NetworkManager
 	{
         if (sceneName.StartsWith("Assets/Scenes/SampleMap"))
         {
+            GameObject serverProjectileHandlerInstance = Instantiate(_serverProjectileHandler);
+            ServerProjectileHandler serverProjectileHandler = serverProjectileHandlerInstance.GetComponent<ServerProjectileHandler>();
+            NetworkServer.Spawn(serverProjectileHandlerInstance);
+
             GameObject playerSpawnSystemInstance = Instantiate(_playerSpawnSystem);
+            playerSpawnSystemInstance.GetComponent<PlayerSpawnSystem>().ProjectileHandler = serverProjectileHandler;
             NetworkServer.Spawn(playerSpawnSystemInstance);
 
             GameObject roundSystemInstance = Instantiate(_roundSystem);
