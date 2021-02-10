@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using Steamworks;
@@ -32,9 +30,8 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
-        _networkManager.gameObject.SetActive(true);
-
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, _networkManager.maxConnections);
+        Debug.Log("Trying to reach Steam Network...");
     }
 
     private void OnLobbyCreated(LobbyCreated_t callback)
@@ -45,6 +42,8 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
+        Debug.Log("Steam lobby creation succesful. Host is" + SteamUser.GetSteamID().ToString());
+
         _networkManager.StartHost();
 
         SteamMatchmaking.SetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey, SteamUser.GetSteamID().ToString());
@@ -53,15 +52,22 @@ public class SteamLobby : MonoBehaviour
     private void OnGameLobbyJoinRequested(GameLobbyJoinRequested_t callback)
     {
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
+        Debug.Log("Trying to join lobby (id: " + callback.m_steamIDLobby + ")");
     }
 
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
-        // if we are the Host
-        if (NetworkServer.active) return;
+        if (NetworkServer.active) 
+        {
+            // if we are the Host
+            return;
+        }
 
         string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
         _networkManager.networkAddress = hostAddress;
+
+        Debug.Log("Joined " + hostAddress);
+
         _networkManager.StartClient();
     }
 }
