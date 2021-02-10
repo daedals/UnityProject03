@@ -41,6 +41,8 @@ public class NetworkManagerCustom : NetworkManager
 	{
         var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
 
+        ClientScene.ClearSpawners();
+
         foreach(var prefab in spawnablePrefabs)
         {
             ClientScene.RegisterPrefab(prefab);
