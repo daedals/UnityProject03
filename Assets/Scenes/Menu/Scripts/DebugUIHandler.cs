@@ -14,14 +14,6 @@ public class DebugUIHandler : MonoBehaviour
     private string _log;
     private Queue<string> _logQueue = new Queue<string>();
 
-    private void Start()
-    {
-        Debug.Log("Test Message 1");
-        Debug.Log("Test Message 2");
-        Debug.Log("Test Message 3");
-        Debug.Log("Test Message 4");
-    }
-
     private void Awake()
     {
         // singleton logic
@@ -66,7 +58,9 @@ public class DebugUIHandler : MonoBehaviour
             break;
         }
 
-        string log = "<color=" + color + ">[" + type + "] " + msg + "</color=" + color + ">\n";
+        bool a = msg.Contains("eference");
+
+        string log = "<color=" + color + ">[" + type + "] " + msg + (a ? "\n" + stackTrace : "") + "</color=" + color + ">\n";
 
         _logQueue.Enqueue(log);
         _log = string.Empty;

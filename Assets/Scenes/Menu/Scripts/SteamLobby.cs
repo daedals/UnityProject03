@@ -42,7 +42,7 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
-        Debug.Log("Steam lobby creation succesful. Host is" + SteamUser.GetSteamID().ToString());
+        Debug.Log("Steam lobby creation succesful. Host is " + SteamUser.GetSteamID().ToString());
 
         _networkManager.StartHost();
 
@@ -60,6 +60,7 @@ public class SteamLobby : MonoBehaviour
         if (NetworkServer.active) 
         {
             // if we are the Host
+            Debug.Log("Machine is already Host, no Client was initialized.");
             return;
         }
 

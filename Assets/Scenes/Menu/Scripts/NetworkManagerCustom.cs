@@ -41,6 +41,9 @@ public class NetworkManagerCustom : NetworkManager
 	{
         var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
 
+        // this can (for some reason) only be executed on host
+        // Debug.Log("Client initialized. Loading prefabs... (" + transport + ")");
+
         ClientScene.ClearSpawners();
 
         foreach(var prefab in spawnablePrefabs)

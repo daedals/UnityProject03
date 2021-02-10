@@ -5588,5 +5588,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: DebugUI
       objectReference: {fileID: 0}
+    - target: {fileID: 7569849098272145769, guid: 4921d57461e50f04ca50b187d3f8fa48,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1184.6208
+      objectReference: {fileID: 0}
+    - target: {fileID: 7569849098272145769, guid: 4921d57461e50f04ca50b187d3f8fa48,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -592.3103
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4921d57461e50f04ca50b187d3f8fa48, type: 3}
