@@ -12,6 +12,12 @@ public class Projectile : NetworkBehaviour
     [Header("Settings")]
     [SerializeField] private float _speed = 5f;
     [SerializeField] private float _lifeTime = 5f;
+    [SerializeField] private float _slow = .6f;
+
+    public float MovementSpeedModifier 
+    {
+        get { return _slow; }
+    }
 
     private PlayerIdentity _ownerID;
 

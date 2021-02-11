@@ -40,6 +40,7 @@ public class ServerProjectileHandler : NetworkBehaviour
             return;
         }
 
+
         GameObject projectileInstance = Instantiate(
             _projectilePrefab,
             player.ProjectileSpawn.position, 
@@ -47,6 +48,8 @@ public class ServerProjectileHandler : NetworkBehaviour
 
         Projectile projectile = projectileInstance.GetComponent<Projectile>();
         projectile.SetOwner(ownerID);
+
+        player.GetComponent<MovementSpeedModifier>().AddModifier(projectile.MovementSpeedModifier);
 
         NetworkServer.Spawn(projectileInstance);
 
@@ -65,6 +68,8 @@ public class ServerProjectileHandler : NetworkBehaviour
             projectile.transform.rotation = player.ProjectileSpawn.rotation;
             yield return 0;
         }
+
+        player.GetComponent<MovementSpeedModifier>().RemoveModifier(projectile.MovementSpeedModifier);
         projectile.Fire(player.ProjectileSpawn.forward);
     }
 

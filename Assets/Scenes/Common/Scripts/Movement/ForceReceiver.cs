@@ -21,12 +21,10 @@ public class ForceReceiver : NetworkBehaviour, IMovementModifier
         enabled = true;
 	}
 
-
     [ClientCallback]
     private void OnEnable() => _movementHandler.AddModifier(this);
     [ClientCallback]
     private void OnDisable() => _movementHandler.RemoveModifier(this);
-
 
     public Vector3 MMValue { get; private set; }
 
