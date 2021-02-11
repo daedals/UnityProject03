@@ -15,9 +15,11 @@ public class Projectile : NetworkBehaviour
 
     private PlayerIdentity _ownerID;
 
-    public bool Fired { get; private set; }
 
+    private bool _ownerProtection;
     private Vector3 _fireDirection;
+
+    public bool Fired { get; private set; }
 
 
     private void OnDestroy()
@@ -37,6 +39,7 @@ public class Projectile : NetworkBehaviour
         Fired = true;
         _fireDirection = fireDirection;
 
+        _ownerProtection = true;
         _collider.enabled = true;
 
         StartCoroutine(UpdatePosition());
@@ -69,11 +72,33 @@ public class Projectile : NetworkBehaviour
 
         if (other.gameObject.tag == TagNames.Player)
         {
-            Debug.Log("Player was hit.");
+            Debug.Log("Player was hit by Projectile.");
 
             PlayerIdentity otherID = other.GetComponent<PlayerIdentity>();
 
-            Debug.Log("Hitbox belongs to projectile owner? " + (otherID.Value == _ownerID.Value));
+            if (otherID.Value != _ownerID.Value || (otherID.Value == _ownerID.Value && !_ownerProtection))
+            {
+                Debug.Log("Projectile exploded.");
+            }
+        }
+    }
+
+    /*
+    This executes when another collider leaves the trigger zone of this projectile.
+
+    Currently only used to disable the owners protection the first time the owner leaves the trigger zone.
+    */
+    private void OnTriggerExit(Collider other)
+    {
+        if (_ownerProtection && other.gameObject.tag == TagNames.Player)
+        {
+            PlayerIdentity otherID = other.GetComponent<PlayerIdentity>();
+
+            if (otherID.Value == _ownerID.Value)
+            {
+                Debug.Log("Owners protection from bullet ceased.");
+                _ownerProtection = false;
+            }
         }
     }
 }
