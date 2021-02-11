@@ -32,12 +32,21 @@ public class ServerProjectileHandler : NetworkBehaviour
     [Server]
     private void SpawnProjectile(PlayerActionProcessor player)
     {
+        PlayerIdentity ownerID = player.GetComponent<PlayerIdentity>();
+
+        if (ownerID == null)
+        {
+            Debug.Log("Could not instantiate projectile because of missing PlayerIdentity.");
+            return;
+        }
+
         GameObject projectileInstance = Instantiate(
             _projectilePrefab,
             player.ProjectileSpawn.position, 
             player.ProjectileSpawn.rotation);
 
         Projectile projectile = projectileInstance.GetComponent<Projectile>();
+        projectile.SetOwner(ownerID);
 
         NetworkServer.Spawn(projectileInstance);
 

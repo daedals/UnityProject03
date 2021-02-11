@@ -5886,7 +5886,7 @@ MonoBehaviour:
   runInBackground: 1
   autoStartServerBuild: 1
   showDebugMessages: 0
-  serverTickRate: 30
+  serverTickRate: 60
   offlineScene: 
   onlineScene: Assets/Scenes/Menu.unity
   transport: {fileID: 1985367594}
