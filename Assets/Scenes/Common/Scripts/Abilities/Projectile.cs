@@ -85,8 +85,38 @@ public class Projectile : NetworkBehaviour
             if (otherID.Value != _ownerID.Value || (otherID.Value == _ownerID.Value && !_ownerProtection))
             {
                 Debug.Log("Projectile exploded.");
+                Explode();
             }
         }
+    }
+
+    [Server]
+    private void Explode()
+    {
+        GameObject[] players = GameObject.FindGameObjectsWithTag(TagNames.Player);
+
+        foreach (GameObject player in players)
+        {
+            Vector3 direction = player.transform.position - transform.position;
+            direction.y = 0;
+
+            if (direction.magnitude > 3) continue;
+
+            direction.y = 1;
+            direction.Normalize();
+
+            NetworkConnection target = player.GetComponent<NetworkIdentity>().connectionToClient;
+
+            TargetExplosion(target, player, direction);
+        }
+
+        Destroy(gameObject);
+    }
+
+    [TargetRpc]
+    private void TargetExplosion(NetworkConnection conn, GameObject player, Vector3 direction)
+    {
+        player.GetComponent<ForceReceiver>().AddForce(direction * 1.5f);
     }
 
     /*
