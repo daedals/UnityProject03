@@ -55,9 +55,11 @@ public class NetworkManagerCustom : NetworkManager
 	public override void OnClientConnect(NetworkConnection conn)
 	{
         base.OnClientConnect(conn);
+        Debug.Log("Client connected to Server.");
 
         OnClientConnected?.Invoke();
 	}
+
 	public override void OnClientDisconnect(NetworkConnection conn)
 	{
         base.OnClientDisconnect(conn);
@@ -85,6 +87,8 @@ public class NetworkManagerCustom : NetworkManager
         if (SceneManager.GetActiveScene().path == menuScene)
         {
             bool isLeader = RoomPlayers.Count == 0;
+
+            Debug.Log("Istantiating room player instance.");
 
             NetworkRoomPlayerLobby roomPlayerInstance = Instantiate(_roomPlayerPrefab);
 

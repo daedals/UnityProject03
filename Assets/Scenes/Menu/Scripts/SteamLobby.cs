@@ -13,6 +13,18 @@ public class SteamLobby : MonoBehaviour
 
     private const string HostAddressKey = "HostAddress";
 
+    private void OnEnable()
+    {
+        // NetworkManagerCustom.OnClientConnected += HandleClientConnected;
+        // NetworkManagerCustom.OnClientDisconnected += HandleClientDisconnected;
+    }
+
+    private void OnDisable()
+    {
+        NetworkManagerCustom.OnClientConnected -= HandleClientConnected;
+        NetworkManagerCustom.OnClientDisconnected -= HandleClientDisconnected;
+    }
+
     private void Start()
     {
         if (!SteamManager.Initialized)
@@ -64,11 +76,28 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
+        // moved here from OnEnable
+        NetworkManagerCustom.OnClientConnected += HandleClientConnected;
+        NetworkManagerCustom.OnClientDisconnected += HandleClientDisconnected;
+
         string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
         _networkManager.networkAddress = hostAddress;
 
         Debug.Log("Joined " + hostAddress);
 
         _networkManager.StartClient();
+    }
+    
+    private void HandleClientConnected()
+    {
+        Debug.Log("HandleClientConnect called in SteamLobby");
+
+        gameObject.SetActive(false);
+        _landingPagePanel.SetActive(false);
+    }
+
+    private void HandleClientDisconnected()
+    {
+        _landingPagePanel.SetActive(true);
     }
 }

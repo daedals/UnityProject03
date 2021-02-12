@@ -15,8 +15,8 @@ public class JoinLobbyMenu : MonoBehaviour
 
     private void OnEnable()
     {
-        NetworkManagerCustom.OnClientConnected += HandleClientConnected;
-        NetworkManagerCustom.OnClientDisconnected += HandleClientDisconnected;
+        // NetworkManagerCustom.OnClientConnected += HandleClientConnected;
+        // NetworkManagerCustom.OnClientDisconnected += HandleClientDisconnected;
     }
 
     private void OnDisable()
@@ -27,6 +27,10 @@ public class JoinLobbyMenu : MonoBehaviour
 
     public void JoinLobby()
     {
+        // moved here from OnEnable
+        NetworkManagerCustom.OnClientConnected += HandleClientConnected;
+        NetworkManagerCustom.OnClientDisconnected += HandleClientDisconnected;
+
         string ipAddress = _ipAddressInputField.text;
 
         _networkManager.networkAddress = ipAddress;
@@ -37,6 +41,7 @@ public class JoinLobbyMenu : MonoBehaviour
 
     private void HandleClientConnected()
     {
+        Debug.Log("HandleClientConnect called in JoinLobbyMenu");
         _joinButton.interactable = true;
 
         gameObject.SetActive(false);
@@ -46,5 +51,6 @@ public class JoinLobbyMenu : MonoBehaviour
     private void HandleClientDisconnected()
     {
         _joinButton.interactable = true;
+        _landingPagePanel.SetActive(true);
     }
 }
