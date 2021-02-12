@@ -27,6 +27,7 @@ GameObject:
   - component: {fileID: 4934864199293122877}
   - component: {fileID: 94267983407735258}
   - component: {fileID: 4766493063146415901}
+  - component: {fileID: 5638173663697942859}
   - component: {fileID: 3358350769245753416}
   - component: {fileID: 4930775997195825461}
   m_Layer: 0
@@ -113,6 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  _debugMovementSpeed: 0
 --- !u!114 &5173861025097002914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +161,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _controller: {fileID: 1744300020674181121}
+  _movementSpeed: 0
 --- !u!114 &1744300020674181135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -374,6 +377,21 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _projectileSpawn: {fileID: 7816390974111952259}
+--- !u!114 &5638173663697942859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744300020674181134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c19b0ef81e0e9394589164da8bbe6dc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  _lmbAbility: {fileID: 0}
 --- !u!114 &3358350769245753416
 MonoBehaviour:
   m_ObjectHideFlags: 0
