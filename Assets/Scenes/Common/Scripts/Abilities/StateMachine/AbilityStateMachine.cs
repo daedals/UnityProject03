@@ -11,10 +11,25 @@ public class AbilityStateMachine : StateMachine
 	private float interruptionDuration;
 	private float disableDuration;
 
-	private List<BaseBehaviour> behaviours = new List<BaseBehaviour>();
+	private readonly List<BaseBehaviour> behaviours = new List<BaseBehaviour>();
 
-	private void Awake()
+	public GameObject owner;
+
+	/* placeholder - create constructor */
+
+	public AbilityStateMachine(List<BaseBehaviour> behaviours, AbilityTemplate template, GameObject owner) : base(owner?.GetComponent<PlayerAbilityManager>())
 	{
+		this.behaviours = behaviours;
+		this.owner = owner;
+
+		/* TODO: properly setup data */
+		channelDuration = template.channelDuration;
+		castDuration = template.castDuration;
+		cooldownDuration = template.cooldownDuration;
+		interruptionDuration = template.interruptionDuration;
+		disableDuration = 0f;
+		
+		// Setup all relevant states
 		var inactive = new Inactive();
 		var channeling = new Channeling(this, channelDuration, behaviours);
 		var casting = new Casting(this, castDuration, behaviours);
@@ -22,6 +37,7 @@ public class AbilityStateMachine : StateMachine
 		var disabled = new Disabled(this, disableDuration, behaviours);
 		var interrupted = new Interrupted(this, interruptionDuration, behaviours);
 
+		// connect states with transitions
 		AddTransition(inactive, channeling, AbilityTriggerPressed);
 
 		AddTransition(channeling, inactive, AbilityTriggerReleased);
@@ -37,6 +53,11 @@ public class AbilityStateMachine : StateMachine
 		
 		AddTransition(disabled, inactive, AbilityEnabled);
 		AddAnyTransition(disabled, AbilityDisabled);
+
+		Debug.Log(owner != null);
+
+		// set starting position
+		SetState(inactive);
 	}
 
 	#region Events

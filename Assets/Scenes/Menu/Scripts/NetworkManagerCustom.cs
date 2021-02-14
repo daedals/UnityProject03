@@ -24,6 +24,7 @@ public class NetworkManagerCustom : NetworkManager
     // all systems
     [SerializeField] private GameObject _playerSpawnSystem = null;
     [SerializeField] private GameObject _roundSystem = null;
+    [SerializeField] private GameObject _abilityDatabase = null;
 
     private MapHandler _mapHandler;
 
@@ -167,6 +168,9 @@ public class NetworkManagerCustom : NetworkManager
 	{
         if (sceneName.StartsWith("Assets/Scenes/SampleMap"))
         {
+            GameObject abilityDatabaseInstance = Instantiate(_abilityDatabase);
+            NetworkServer.Spawn(abilityDatabaseInstance);
+
             GameObject playerSpawnSystemInstance = Instantiate(_playerSpawnSystem);
             NetworkServer.Spawn(playerSpawnSystemInstance);
 

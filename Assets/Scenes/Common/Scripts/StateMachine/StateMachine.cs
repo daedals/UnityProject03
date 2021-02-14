@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public abstract class StateMachine : MonoBehaviour
+public abstract class StateMachine
 {
-    private IState _currentState;
+    public IState currentState;
 
     private Dictionary<System.Type, List<Transition>> _transitions = new Dictionary<System.Type, List<Transition>>();
     private List<Transition> _currentTransitions = new List<Transition>();
@@ -13,33 +13,39 @@ public abstract class StateMachine : MonoBehaviour
 
     private static List<Transition> EmptyTransitions = new List<Transition>(capacity: 0);
 
+    private Coroutine update = null;
 
-    protected void Update()
+    public StateMachine(MonoBehaviour coroutineSlave)
     {
-        // var transition = GetTransition();
+        if (coroutineSlave != null)
+        {
+            update = coroutineSlave.GetComponent<PlayerAbilityManager>().StartCoroutine(Update());
+        }
+    }
 
-        // if (transition != null)
-        // {
-        //     SetState(transition.To);
-        // }
-
-        _currentState?.Tick();
+    protected IEnumerator Update()
+    {
+        while (true)
+        {
+            currentState?.Tick();
+            yield return 0;
+        }
     }
 
     protected void SetState(IState state)
     {
-        if (state == _currentState) return;
+        if (state == currentState) return;
 
-        _currentState?.OnExit();
+        currentState?.OnExit();
 
         foreach (Transition transition in _currentTransitions)
         {
             transition.Unsubscribe();
         }
 
-        _currentState = state;
+        currentState = state;
 
-        _transitions.TryGetValue(_currentState.GetType(), out _currentTransitions);
+        _transitions.TryGetValue(currentState.GetType(), out _currentTransitions);
 
         if (_currentTransitions == null)
         {
@@ -51,7 +57,7 @@ public abstract class StateMachine : MonoBehaviour
             transition.Subscribe();
         }
 
-        _currentState.OnEnter();
+        currentState.OnEnter();
     }
 
     protected class Transition
@@ -92,21 +98,4 @@ public abstract class StateMachine : MonoBehaviour
         _anyTransitions.Add(transition);
         transition.Subscribe();
     }
-
-    // protected Transition GetTransition()
-    // {
-    //     foreach (Transition transition in _anyTransitions)
-    //     {
-    //         if (transition.Condition())
-    //             return transition;
-    //     }
-        
-    //     foreach (Transition transition in _currentTransitions)
-    //     {
-    //         if (transition.Condition())
-    //             return transition;
-    //     }
-
-    //     return null;
-    // }
 }

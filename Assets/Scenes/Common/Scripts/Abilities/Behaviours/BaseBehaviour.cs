@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseBehaviour : MonoBehaviour
+public abstract class BaseBehaviour : System.ICloneable
 {
     [System.Flags]
 	public enum ExecutionMask
@@ -22,4 +22,5 @@ public abstract class BaseBehaviour : MonoBehaviour
     public abstract void Tick();
     public abstract void OnEnter();
     public abstract void OnExit();
+    public abstract object Clone();
 }

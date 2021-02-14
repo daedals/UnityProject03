@@ -39,7 +39,7 @@ public abstract class BaseAbilityState : IState
             behaviour.OnEnter();
         }
 
-        coroutine = stateMachine.StartCoroutine(RunUntilComplete());
+        coroutine = stateMachine.owner.GetComponent<PlayerAbilityManager>().StartCoroutine(RunUntilComplete());
     }
 
     private IEnumerator RunUntilComplete()
