@@ -5912,7 +5912,7 @@ MonoBehaviour:
     type: 3}
   _roundSystem: {fileID: 5208549738672871083, guid: ae5b663b98d15a34ab6228c977da95e2,
     type: 3}
-  _serverProjectileHandler: {fileID: 1476389393528160826, guid: bfdbda6d68650d1429c86f7edc7dbef8,
+  _abilityDatabase: {fileID: 5001077365889633336, guid: 11bb17034ddd3d34eb2544f2469489f2,
     type: 3}
 --- !u!4 &1985367596
 Transform:

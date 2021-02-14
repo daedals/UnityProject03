@@ -7,8 +7,6 @@ using Mirror;
 public class PlayerSpawnSystem : NetworkBehaviour
 {
     [SerializeField] private GameObject _playerPrefab = null;
-    public ServerProjectileHandler ProjectileHandler { private get; set; }
-
 
     private static List<Transform> _spawnPoints = new List<Transform>();
     private int _nextIndex = 0;
@@ -46,9 +44,6 @@ public class PlayerSpawnSystem : NetworkBehaviour
         }
 
         GameObject playerInstance = Instantiate(_playerPrefab, _spawnPoints[_nextIndex].position, _spawnPoints[_nextIndex].rotation);
-
-        // find the gameobject meant to act as transform for projectile spawn and register it in projectile handler
-        ProjectileHandler.AddPlayer(playerInstance.GetComponent<PlayerActionProcessor>());
 
         NetworkServer.Spawn(playerInstance, conn);
 

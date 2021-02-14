@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1744300020674181133}
-  - component: {fileID: 1744300020674181121}
   - component: {fileID: 9102827786971249117}
+  - component: {fileID: 1744300020674181121}
   - component: {fileID: 1744300020674181126}
   - component: {fileID: 7588258639141380362}
   - component: {fileID: 5173861025097002914}
@@ -55,6 +55,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &9102827786971249117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744300020674181134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e919a4b3e711a5145a8d5ecb65e3a517, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _value: 0
 --- !u!143 &1744300020674181121
 CharacterController:
   m_ObjectHideFlags: 0
@@ -73,19 +86,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.95, z: 0}
---- !u!114 &9102827786971249117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1744300020674181134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e919a4b3e711a5145a8d5ecb65e3a517, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _value: 0
 --- !u!114 &1744300020674181126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391,7 +391,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  _lmbAbility: {fileID: 0}
 --- !u!114 &3358350769245753416
 MonoBehaviour:
   m_ObjectHideFlags: 0
