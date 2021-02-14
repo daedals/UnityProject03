@@ -16,12 +16,12 @@ public abstract class StateMachine : MonoBehaviour
 
     protected void Update()
     {
-        var transition = GetTransition();
+        // var transition = GetTransition();
 
-        if (transition != null)
-        {
-            SetState(transition.To);
-        }
+        // if (transition != null)
+        // {
+        //     SetState(transition.To);
+        // }
 
         _currentState?.Tick();
     }
@@ -31,6 +31,12 @@ public abstract class StateMachine : MonoBehaviour
         if (state == _currentState) return;
 
         _currentState?.OnExit();
+
+        foreach (Transition transition in _currentTransitions)
+        {
+            transition.Unsubscribe();
+        }
+
         _currentState = state;
 
         _transitions.TryGetValue(_currentState.GetType(), out _currentTransitions);
@@ -39,23 +45,37 @@ public abstract class StateMachine : MonoBehaviour
         {
             _currentTransitions = EmptyTransitions;
         }
+        
+        foreach (Transition transition in _currentTransitions)
+        {
+            transition.Subscribe();
+        }
 
         _currentState.OnEnter();
     }
 
     protected class Transition
     {
-        public IState To { get; }
-        public Func<bool> Condition { get; }
+        private IState to { get; }
+        private event Action trigger;
+        private event Action<IState> internalTrigger;
         
-        public Transition(IState to, Func<bool> condition)
+        public Transition(IState to, Action trigger, Action<IState> setState)
         {
-            To = to;
-            Condition = condition;
+            this.to = to;
+            this.trigger = trigger;
+
+            internalTrigger += setState;
         }
+
+        private void Trigger() => internalTrigger.Invoke(to);
+
+        public void Subscribe() => trigger += Trigger;
+
+        public void Unsubscribe() => trigger -= Trigger;
     }
 
-    protected void AddTransition(IState from, IState to, Func<bool> predecate)
+    protected void AddTransition(IState from, IState to, Action trigger)
     {
         if (_transitions.TryGetValue(from.GetType(), out var transitions) == false)
         {
@@ -63,28 +83,30 @@ public abstract class StateMachine : MonoBehaviour
             _transitions[from.GetType()] = transitions;
         }
 
-        transitions.Add(new Transition(to, predecate));
+        transitions.Add(new Transition(to, trigger, SetState));
     }
 
-    protected void AddAnyTransition(IState to,Func<bool> predecate)
+    protected void AddAnyTransition(IState to, Action trigger)
     {
-        _anyTransitions.Add(new Transition(to, predecate));
+        Transition transition = new Transition(to, trigger, SetState);
+        _anyTransitions.Add(transition);
+        transition.Subscribe();
     }
 
-    protected Transition GetTransition()
-    {
-        foreach (Transition transition in _anyTransitions)
-        {
-            if (transition.Condition())
-                return transition;
-        }
+    // protected Transition GetTransition()
+    // {
+    //     foreach (Transition transition in _anyTransitions)
+    //     {
+    //         if (transition.Condition())
+    //             return transition;
+    //     }
         
-        foreach (Transition transition in _currentTransitions)
-        {
-            if (transition.Condition())
-                return transition;
-        }
+    //     foreach (Transition transition in _currentTransitions)
+    //     {
+    //         if (transition.Condition())
+    //             return transition;
+    //     }
 
-        return null;
-    }
+    //     return null;
+    // }
 }

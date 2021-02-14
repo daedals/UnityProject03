@@ -2,20 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Disabled : IState
+public class Disabled : BaseAbilityState
 {
-    public void Tick()
-    {
+    public Disabled(AbilityStateMachine stateMachine, float duration, List<BaseBehaviour> behaviours) : base(stateMachine, duration, behaviours) {}
 
-    }
-
-    public void OnEnter()
-    {
-
-    }
-
-    public void OnExit()
-    {
-        
-    }
+    public void SetDuration(float duration) => this.duration = duration;
 }

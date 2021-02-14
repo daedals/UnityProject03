@@ -5,36 +5,77 @@ using System;
 
 public class AbilityStateMachine : StateMachine
 {
-	public bool isChanneling = false;
 	private float channelDuration;
-
-	public bool isCasting = false;
 	private float castDuration;
-
-    public bool isOnCooldown = false;
 	private float cooldownDuration;
+	private float interruptionDuration;
+	private float disableDuration;
 
-	bool ChannelCompleted() => isChanneling;
-	bool CastCompleted() => isCasting;
-	bool CooldownCompleted() => isOnCooldown;
-
-
-	bool Placeholder() => false;
+	private List<BaseBehaviour> behaviours = new List<BaseBehaviour>();
 
 	private void Awake()
 	{
-		var inactive = new Casting(this, castDuration);
-		var channeling = new Channeling(this, channelDuration);
-		var casting = new Casting(this, castDuration);
-		var onCooldown = new OnCooldown(this, cooldownDuration);
-		var disabled = new Channeling(this, channelDuration);
+		var inactive = new Inactive();
+		var channeling = new Channeling(this, channelDuration, behaviours);
+		var casting = new Casting(this, castDuration, behaviours);
+		var onCooldown = new OnCooldown(this, cooldownDuration, behaviours);
+		var disabled = new Disabled(this, disableDuration, behaviours);
+		var interrupted = new Interrupted(this, interruptionDuration, behaviours);
 
-		AddTransition(inactive, channeling, Placeholder);
-		AddTransition(channeling, casting, ChannelCompleted);
-		AddTransition(casting, onCooldown, CastCompleted);
-		AddTransition(onCooldown, inactive, Placeholder);
+		AddTransition(inactive, channeling, AbilityTriggerPressed);
 
+		AddTransition(channeling, inactive, AbilityTriggerReleased);
+		AddTransition(channeling, interrupted, AbilityInterrupted);
+		AddTransition(channeling, casting, StateCompleted);
+
+		AddTransition(casting, interrupted, AbilityInterrupted);
+		AddTransition(casting, onCooldown, StateCompleted);
+
+		AddTransition(onCooldown, inactive, StateCompleted);
+
+		AddTransition(interrupted, inactive, StateCompleted);
 		
-		AddAnyTransition(disabled, Placeholder);
+		AddTransition(disabled, inactive, AbilityEnabled);
+		AddAnyTransition(disabled, AbilityDisabled);
 	}
+
+	#region Events
+	private event Action ChannelCanceled;
+	public void InvokeChannelCanceled() => ChannelCanceled?.Invoke();
+	
+	private event Action CastCanceled;
+	public void InvokeCastCanceled() => CastCanceled?.Invoke();
+	
+
+	private event Action StateCompleted;
+	public void InvokeStateCompleted() => StateCompleted?.Invoke();
+
+	private event Action AbilityDisabled;
+	public void DisableAbility(float duration)
+	{
+		// set duration of disable
+		AbilityDisabled?.Invoke();
+	}
+	private event Action AbilityEnabled;
+	public void EnableAbility() => AbilityEnabled?.Invoke();
+
+    private event Action AbilityTriggerPressed;
+    private event Action AbilityTriggerReleased;
+
+    public void SetTrigger(bool trigger)
+    {
+        if (trigger)
+        {
+            AbilityTriggerPressed?.Invoke();
+        }
+        else
+        {
+            AbilityTriggerReleased?.Invoke();
+        }
+    }
+
+	private event Action AbilityInterrupted;
+	public void InterruptAbility() => AbilityInterrupted?.Invoke();
+
+	#endregion
 }
