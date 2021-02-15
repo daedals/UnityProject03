@@ -39,12 +39,15 @@ public abstract class BaseAbilityState : IState
             behaviour.OnEnter();
         }
 
+        Debug.Log(this.GetType().ToString() + " OnEnter method called.");
         coroutine = stateMachine.owner.GetComponent<PlayerAbilityManager>().StartCoroutine(RunUntilComplete());
     }
 
     private IEnumerator RunUntilComplete()
     {
+        Debug.Log(this.GetType().ToString() + " coroutine started.");
         yield return new WaitForSeconds(duration);
+        Debug.Log(this.GetType().ToString() + " state change event invoked.");
         stateMachine.InvokeStateCompleted();
     }
 
@@ -55,6 +58,7 @@ public abstract class BaseAbilityState : IState
             behaviour.OnExit();
         }
 
+        Debug.Log(this.GetType().ToString() + " OnExit method called.");
         coroutine = null;
     }
 }

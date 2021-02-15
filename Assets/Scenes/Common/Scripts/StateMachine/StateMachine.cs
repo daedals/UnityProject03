@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+public delegate void SubscribtableAction();
+
 public abstract class StateMachine
 {
     public IState currentState;
@@ -44,11 +46,14 @@ public abstract class StateMachine
         }
 
         currentState = state;
+        
+        Debug.Log("Subscribing to state " + currentState.GetType().ToString() + "s possible transitions");
 
         _transitions.TryGetValue(currentState.GetType(), out _currentTransitions);
 
         if (_currentTransitions == null)
         {
+            Debug.Log("Transitions are empty.");
             _currentTransitions = EmptyTransitions;
         }
         
@@ -60,28 +65,27 @@ public abstract class StateMachine
         currentState.OnEnter();
     }
 
-    protected class Transition
+    private class Transition
     {
         private IState to { get; }
-        private event Action trigger;
-        private event Action<IState> internalTrigger;
+        private Action<IState> SetState;
+        private bool active = false;
         
-        public Transition(IState to, Action trigger, Action<IState> setState)
+        public Transition(IState to, ref SubscribtableAction trigger, Action<IState> SetState)
         {
             this.to = to;
-            this.trigger = trigger;
-
-            internalTrigger += setState;
+            trigger += Trigger;
+            this.SetState = SetState;
         }
-
-        private void Trigger() => internalTrigger.Invoke(to);
-
-        public void Subscribe() => trigger += Trigger;
-
-        public void Unsubscribe() => trigger -= Trigger;
+        private void Trigger()
+        {
+            if (active) SetState(to);
+        }
+        public void Subscribe() => active = true;
+        public void Unsubscribe() => active = false;
     }
 
-    protected void AddTransition(IState from, IState to, Action trigger)
+    protected void AddTransition(IState from, IState to, ref SubscribtableAction trigger)
     {
         if (_transitions.TryGetValue(from.GetType(), out var transitions) == false)
         {
@@ -89,12 +93,12 @@ public abstract class StateMachine
             _transitions[from.GetType()] = transitions;
         }
 
-        transitions.Add(new Transition(to, trigger, SetState));
+        transitions.Add(new Transition(to, ref trigger, SetState));
     }
 
-    protected void AddAnyTransition(IState to, Action trigger)
+    protected void AddAnyTransition(IState to, ref SubscribtableAction trigger)
     {
-        Transition transition = new Transition(to, trigger, SetState);
+        Transition transition = new Transition(to, ref trigger, SetState);
         _anyTransitions.Add(transition);
         transition.Subscribe();
     }

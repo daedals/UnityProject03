@@ -15,8 +15,7 @@ public class AbilityStateMachine : StateMachine
 
 	public GameObject owner;
 
-	/* placeholder - create constructor */
-
+	
 	public AbilityStateMachine(List<BaseBehaviour> behaviours, AbilityTemplate template, GameObject owner) : base(owner?.GetComponent<PlayerAbilityManager>())
 	{
 		this.behaviours = behaviours;
@@ -38,55 +37,55 @@ public class AbilityStateMachine : StateMachine
 		var interrupted = new Interrupted(this, interruptionDuration, behaviours);
 
 		// connect states with transitions
-		AddTransition(inactive, channeling, AbilityTriggerPressed);
+		AddTransition(inactive, channeling, ref AbilityTriggerPressed);
 
-		AddTransition(channeling, inactive, AbilityTriggerReleased);
-		AddTransition(channeling, interrupted, AbilityInterrupted);
-		AddTransition(channeling, casting, StateCompleted);
+		AddTransition(channeling, inactive, ref AbilityTriggerReleased);
+		AddTransition(channeling, interrupted, ref AbilityInterrupted);
+		AddTransition(channeling, casting, ref StateCompleted);
 
-		AddTransition(casting, interrupted, AbilityInterrupted);
-		AddTransition(casting, onCooldown, StateCompleted);
+		AddTransition(casting, interrupted, ref AbilityInterrupted);
+		AddTransition(casting, onCooldown, ref StateCompleted);
 
-		AddTransition(onCooldown, inactive, StateCompleted);
+		AddTransition(onCooldown, inactive, ref StateCompleted);
 
-		AddTransition(interrupted, inactive, StateCompleted);
+		AddTransition(interrupted, inactive, ref StateCompleted);
 		
-		AddTransition(disabled, inactive, AbilityEnabled);
-		AddAnyTransition(disabled, AbilityDisabled);
-
-		Debug.Log(owner != null);
+		AddTransition(disabled, inactive, ref AbilityEnabled);
+		AddAnyTransition(disabled, ref AbilityDisabled);
 
 		// set starting position
 		SetState(inactive);
+		Debug.Log("Initialized State machine to state " + currentState.GetType().ToString());
 	}
 
 	#region Events
-	private event Action ChannelCanceled;
+	public event SubscribtableAction ChannelCanceled;
 	public void InvokeChannelCanceled() => ChannelCanceled?.Invoke();
 	
-	private event Action CastCanceled;
+	public event SubscribtableAction CastCanceled;
 	public void InvokeCastCanceled() => CastCanceled?.Invoke();
 	
 
-	private event Action StateCompleted;
+	public event SubscribtableAction StateCompleted;
 	public void InvokeStateCompleted() => StateCompleted?.Invoke();
 
-	private event Action AbilityDisabled;
+	public event SubscribtableAction AbilityDisabled;
 	public void DisableAbility(float duration)
 	{
 		// set duration of disable
 		AbilityDisabled?.Invoke();
 	}
-	private event Action AbilityEnabled;
+	public event SubscribtableAction AbilityEnabled;
 	public void EnableAbility() => AbilityEnabled?.Invoke();
 
-    private event Action AbilityTriggerPressed;
-    private event Action AbilityTriggerReleased;
+    public event SubscribtableAction AbilityTriggerPressed;
+    public event SubscribtableAction AbilityTriggerReleased;
 
     public void SetTrigger(bool trigger)
     {
         if (trigger)
         {
+			Debug.Log("Invoking AbilityTriggerPressed.");
             AbilityTriggerPressed?.Invoke();
         }
         else
@@ -95,7 +94,7 @@ public class AbilityStateMachine : StateMachine
         }
     }
 
-	private event Action AbilityInterrupted;
+	public event SubscribtableAction AbilityInterrupted;
 	public void InterruptAbility() => AbilityInterrupted?.Invoke();
 
 	#endregion
