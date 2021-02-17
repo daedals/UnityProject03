@@ -18,4 +18,3 @@ MonoBehaviour:
   castDuration: 1
   cooldownDuration: 1
   interruptionDuration: 0.2
-  behaviours: []

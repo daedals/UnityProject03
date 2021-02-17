@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public abstract class BaseBehaviour : System.ICloneable
 {
     [System.Flags]
@@ -16,6 +17,8 @@ public abstract class BaseBehaviour : System.ICloneable
 		INTERRUPTED = 1 << 6,
         ALL = 1 << 7 - 1
 	}
+
+	private bool executionMaskChangeable = false;
 
     public ExecutionMask executionMask = ExecutionMask.NONE;
 

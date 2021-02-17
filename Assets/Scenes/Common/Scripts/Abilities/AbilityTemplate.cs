@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class AbilityTemplate : ScriptableObject
 {
@@ -13,17 +14,19 @@ public class AbilityTemplate : ScriptableObject
 	[SerializeField] public float interruptionDuration;
 
 
+    //This is for easier serialisation of behaviours
+
+
     [Header("Behaviours")]
-    [SerializeField] public List<string> behaviours = new List<string>();
+    [SerializeField] public List<Type> behaviours = new List<Type>();
 
     public Ability Parse()
     {
         List<BaseBehaviour> behaviourInstances = new List<BaseBehaviour>();
 
-        foreach(string behaviourName in behaviours)
+        foreach(Type T in behaviours)
         {
-            var type = System.Type.GetType(behaviourName);
-            var obj = (BaseBehaviour)System.Activator.CreateInstance(type);
+            var obj = (BaseBehaviour)System.Activator.CreateInstance(T);
             behaviourInstances.Add(obj);
         }
 

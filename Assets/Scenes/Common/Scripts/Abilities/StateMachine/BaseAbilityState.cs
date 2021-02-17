@@ -17,6 +17,9 @@ public abstract class BaseAbilityState : IState
         this.duration = duration;
         this.stateMachine = stateMachine;
 
+        // each ability state has an execution flag to indicate which state it represents. Each behaviour has a mask to decide 
+        // when to become active.
+
         this.behaviours = behaviours.FindAll(
             delegate(BaseBehaviour behaviour) 
             { 
