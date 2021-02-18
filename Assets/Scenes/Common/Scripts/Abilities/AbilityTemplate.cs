@@ -18,15 +18,17 @@ public class AbilityTemplate : ScriptableObject
 
 
     [Header("Behaviours")]
-    [SerializeField] public List<Type> behaviours = new List<Type>();
+    [SerializeField] public List<BaseBehaviourData> behaviours = new List<BaseBehaviourData>();
 
     public Ability Parse()
     {
         List<BaseBehaviour> behaviourInstances = new List<BaseBehaviour>();
 
-        foreach(Type T in behaviours)
+        foreach(BaseBehaviourData data in behaviours)
         {
-            var obj = (BaseBehaviour)System.Activator.CreateInstance(T);
+            Type T = data.GetBehaviourType();
+
+            var obj = (BaseBehaviour)System.Activator.CreateInstance(T, new object[] { data });
             behaviourInstances.Add(obj);
         }
 

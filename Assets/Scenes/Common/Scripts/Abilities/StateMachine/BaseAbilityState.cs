@@ -23,7 +23,7 @@ public abstract class BaseAbilityState : IState
         this.behaviours = behaviours.FindAll(
             delegate(BaseBehaviour behaviour) 
             { 
-                return (behaviour.executionMask & behaviourExecutionMask) != 0; 
+                return (behaviour.data.ExecutionMask & behaviourExecutionMask) != 0; 
             });
     }
 

@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: TestAbility
   m_EditorClassIdentifier: 
   Name: TestAbility
-  Description: empty test ability
+  Description: this is just a test
   channelDuration: 1
   castDuration: 1
   cooldownDuration: 1
   interruptionDuration: 0.2
+  behaviours:
+  - {fileID: 0}

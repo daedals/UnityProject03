@@ -3,6 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
+public abstract class BaseBehaviourData : ScriptableObject
+{
+	public System.Type GetBehaviourType()
+	{
+		string s = this.GetType().ToString();
+		return System.Type.GetType(s.Substring(0, s.Length - 4));
+	}
+
+	private bool executionMaskChangeable = false;
+
+    private BaseBehaviour.ExecutionMask executionMask;
+
+	public BaseBehaviour.ExecutionMask ExecutionMask 
+	{
+		get 
+		{
+			return executionMask;
+		}
+		protected set
+		{
+			executionMask = value;
+		}
+	}
+}
+
+
 public abstract class BaseBehaviour : System.ICloneable
 {
     [System.Flags]
@@ -17,10 +43,12 @@ public abstract class BaseBehaviour : System.ICloneable
 		INTERRUPTED = 1 << 6,
         ALL = 1 << 7 - 1
 	}
+	public BaseBehaviourData data;
 
-	private bool executionMaskChangeable = false;
-
-    public ExecutionMask executionMask = ExecutionMask.NONE;
+	public BaseBehaviour(BaseBehaviourData data)
+	{
+		this.data = data;
+	}
 
     public abstract void Tick();
     public abstract void OnEnter();

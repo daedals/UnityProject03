@@ -4,6 +4,22 @@ using UnityEngine;
 using Mirror;
 
 
+[System.Serializable]
+[CreateAssetMenu(menuName = "Behaviour/Linear Projectile")]
+public class LinearProjectileData : BaseBehaviourData
+{
+    [SerializeField] public GameObject projectilePrefab = null;
+
+    [Header("Projectile Settings")]
+    [SerializeField] public float movementSpeed = 3f;
+    [SerializeField] public float lifeTime = 3f;
+
+    public LinearProjectileData()
+    {
+        ExecutionMask = BaseBehaviour.ExecutionMask.CASTING;
+    }
+}
+
 public class LinearProjectile : BaseBehaviour
 {
     [SerializeField] GameObject projectilePrefab = null;
@@ -17,10 +33,10 @@ public class LinearProjectile : BaseBehaviour
 
     private List<Projectile> projectileInstances = new List<Projectile>();
     
-    public LinearProjectile(AbilityStateMachine stateMachine)
-    {
-        executionMask = ExecutionMask.CASTING;
+    public LinearProjectile(LinearProjectileData data) : base(data) {}
 
+    public void Initialize(AbilityStateMachine stateMachine)
+    {
         this.stateMachine = stateMachine;
     }
 
@@ -82,6 +98,6 @@ public class LinearProjectile : BaseBehaviour
 
     public override object Clone()
     {
-        return new LinearProjectile(stateMachine);
+        return new LinearProjectile((LinearProjectileData)data);
     }
 }
