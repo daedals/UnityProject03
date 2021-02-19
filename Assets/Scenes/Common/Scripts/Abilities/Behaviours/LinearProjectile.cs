@@ -11,16 +11,20 @@ public class LinearProjectile : BaseBehaviour
 
     private List<Projectile> projectileInstances = new List<Projectile>();
 
-    public new LinearProjectileData Data { get; protected set; }
 
+    /*
+    // public new LinearProjectileData Data { get; protected set; }
+
+    everytime we use a derived BaseBehaviourData (such as LinearProjectileData) we have to cast to that inheriting class
+    this is because c# doe not support return type covariance (to overwrite local Data property to the derived class)
+    */
 	public LinearProjectile(LinearProjectileData data) : base(data) {}
 
     public override void Tick() {}
 
     public override void OnEnter()
     {
-        Debug.Log("Hello");
-        stateMachine.StateCompleted += OnStateCompleted; 
+        stateMachine.StateCompleted += OnStateCompleted;
     }
 
     public override void OnExit()
@@ -32,16 +36,21 @@ public class LinearProjectile : BaseBehaviour
     {
         GameObject projectileInstance = CmdRequestProjectileSpawn();
 
+        // LinearProjectileData Data = (LinearProjectileData)this.Data;
 
         Projectile projectile = projectileInstance.GetComponent<Projectile>();
-        projectile.Initialize(Data.movementSpeed, Data.lifeTime);
+        projectile.Initialize(((LinearProjectileData)Data).movementSpeed, ((LinearProjectileData)Data).lifeTime);
 
         Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
 
         projectile.LifeTimeEnded += OnLifeTimeEnded;
         projectile.TargetHit += OnTargetHit;
 
-        projectile.Fire(projectileInstance.transform.position - mousePosition);
+        projectile.Fire( Vector3.ProjectOnPlane(
+            mousePosition - projectileInstance.transform.position,
+            Vector3.up
+            ));
+        Debug.Log("Shooting bullet.");
     }
 
     [Command]
@@ -55,7 +64,7 @@ public class LinearProjectile : BaseBehaviour
             return null;
         }
 
-        GameObject projectileInstance = GameObject.Instantiate(Data.projectilePrefab, spawn.position, spawn.rotation);
+        GameObject projectileInstance = GameObject.Instantiate(((LinearProjectileData)Data).projectilePrefab, spawn.position, spawn.rotation);
         NetworkServer.Spawn(projectileInstance);
 
         return projectileInstance;
@@ -74,6 +83,6 @@ public class LinearProjectile : BaseBehaviour
 
     public override object Clone()
     {
-        return new LinearProjectile(Data);
+        return new LinearProjectile((LinearProjectileData)Data);
     }
 }

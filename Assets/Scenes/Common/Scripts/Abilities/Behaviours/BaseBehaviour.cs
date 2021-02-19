@@ -29,13 +29,13 @@ public abstract class BaseBehaviour : System.ICloneable
 	public enum ExecutionMask
 	{
         NONE = 0,
-		INACTIVE = 1 << 1,
-		CHANNELING = 1 << 2,
-		CASTING = 1 << 3,
-		ONCOOLDOWN = 1 << 4,
-		DISABLED = 1 << 5,
-		INTERRUPTED = 1 << 6,
-        ALL = 1 << 7 - 1
+		INACTIVE = 1 << 0,
+		CHANNELING = 1 << 1,
+		CASTING = 1 << 2,
+		ONCOOLDOWN = 1 << 3,
+		DISABLED = 1 << 4,
+		INTERRUPTED = 1 << 5,
+        ALL = 1 << 6 - 1
 	}
 	public BaseBehaviourData Data { get; protected set; }
     protected AbilityStateMachine stateMachine = null;

@@ -19,4 +19,4 @@ MonoBehaviour:
   cooldownDuration: 1
   interruptionDuration: 0.2
   behaviours:
-  - {fileID: 11400000, guid: fbd474a8f826fad4b9966783e25c118f, type: 2}
+  - {fileID: 11400000, guid: aa84ab7aa4af58b4d9be889ed27a2c22, type: 2}

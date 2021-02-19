@@ -15,7 +15,7 @@ public abstract class BaseAbilityState : IState
     public BaseAbilityState(AbilityStateMachine stateMachine, float duration, List<BaseBehaviour> behaviours)
     {
         this.duration = duration;
-        this.stateMachine = stateMachine;
+        this.stateMachine = stateMachine;   
 
         foreach(BaseBehaviour behaviour in behaviours)
         {
@@ -44,18 +44,17 @@ public abstract class BaseAbilityState : IState
     {
         foreach (BaseBehaviour behaviour in behaviours)
         {
-            Debug.Log(behaviour.GetType().ToString() + " is active in this State.");
             behaviour.OnEnter();
         }
 
-        Debug.Log("Entering State " + this.GetType().ToString() + " (" + duration + " s duration)");
+        Debug.Log("OnEnter " + this.GetType().ToString() + " (" + duration + " s duration)");
         coroutine = stateMachine.owner.GetComponent<PlayerAbilityManager>().StartCoroutine(RunUntilComplete());
     }
 
     private IEnumerator RunUntilComplete()
     {
         yield return new WaitForSeconds(duration);
-        
+        Debug.Log("State completed.");
         stateMachine.InvokeStateCompleted();
     }
 
@@ -66,6 +65,7 @@ public abstract class BaseAbilityState : IState
             behaviour.OnExit();
         }
 
+        Debug.Log("OnExit " + this.GetType().ToString());
         coroutine = null;
     }
 }
