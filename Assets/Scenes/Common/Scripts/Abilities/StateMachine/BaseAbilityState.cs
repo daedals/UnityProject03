@@ -17,11 +17,6 @@ public abstract class BaseAbilityState : IState
         this.duration = duration;
         this.stateMachine = stateMachine;   
 
-        foreach(BaseBehaviour behaviour in behaviours)
-        {
-            Debug.Log(this.GetType().ToString() + " " + behaviour.GetType().ToString() + " " + BehaviourExecutionMask + " " + behaviour.Data.ExecutionMask + " " + ((behaviour.Data.ExecutionMask & BehaviourExecutionMask) != 0));
-        }
-
         // each ability state has an execution flag to indicate which state it represents. Each behaviour has a mask to decide 
         // when to become active.
 
@@ -32,7 +27,7 @@ public abstract class BaseAbilityState : IState
             });
     }
 
-    public void Tick() 
+    public void Tick()
     {
         foreach (BaseBehaviour behaviour in behaviours)
         {

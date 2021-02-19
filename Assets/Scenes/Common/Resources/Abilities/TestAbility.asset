@@ -20,3 +20,4 @@ MonoBehaviour:
   interruptionDuration: 0.2
   behaviours:
   - {fileID: 11400000, guid: aa84ab7aa4af58b4d9be889ed27a2c22, type: 2}
+  - {fileID: 11400000, guid: eab2faaa5b8e6454db6f4bc131a21b8d, type: 2}

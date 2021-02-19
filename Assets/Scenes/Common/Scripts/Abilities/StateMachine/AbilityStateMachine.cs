@@ -5,11 +5,11 @@ using System;
 
 public class AbilityStateMachine : StateMachine
 {
-	private float channelDuration;
-	private float castDuration;
-	private float cooldownDuration;
-	private float interruptionDuration;
-	private float disableDuration;
+	public float channelDuration;
+	public float castDuration;
+	public float cooldownDuration;
+	public float interruptionDuration;
+	public float disableDuration;
 
 	private readonly List<BaseBehaviour> behaviours = new List<BaseBehaviour>();
 

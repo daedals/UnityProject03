@@ -22,7 +22,7 @@ public abstract class StateMachine
     {
         if (coroutineSlave != null)
         {
-            update = coroutineSlave.GetComponent<PlayerAbilityManager>().StartCoroutine(Update());
+            update = coroutineSlave.StartCoroutine(Update());
         }
     }
 
