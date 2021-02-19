@@ -7,7 +7,7 @@ public abstract class BaseAbilityState : IState
     protected float duration;
     protected AbilityStateMachine stateMachine;
     protected List<BaseBehaviour> behaviours = new List<BaseBehaviour>();
-    protected BaseBehaviour.ExecutionMask behaviourExecutionMask = BaseBehaviour.ExecutionMask.NONE;
+    public virtual BaseBehaviour.ExecutionMask BehaviourExecutionMask { get { return BaseBehaviour.ExecutionMask.NONE; } }
 
     protected Coroutine coroutine = null;
 
@@ -17,13 +17,18 @@ public abstract class BaseAbilityState : IState
         this.duration = duration;
         this.stateMachine = stateMachine;
 
+        foreach(BaseBehaviour behaviour in behaviours)
+        {
+            Debug.Log(this.GetType().ToString() + " " + behaviour.GetType().ToString() + " " + BehaviourExecutionMask + " " + behaviour.Data.ExecutionMask + " " + ((behaviour.Data.ExecutionMask & BehaviourExecutionMask) != 0));
+        }
+
         // each ability state has an execution flag to indicate which state it represents. Each behaviour has a mask to decide 
         // when to become active.
 
         this.behaviours = behaviours.FindAll(
             delegate(BaseBehaviour behaviour) 
             { 
-                return (behaviour.data.ExecutionMask & behaviourExecutionMask) != 0; 
+                return (behaviour.Data.ExecutionMask & BehaviourExecutionMask) != 0; 
             });
     }
 
@@ -39,18 +44,18 @@ public abstract class BaseAbilityState : IState
     {
         foreach (BaseBehaviour behaviour in behaviours)
         {
+            Debug.Log(behaviour.GetType().ToString() + " is active in this State.");
             behaviour.OnEnter();
         }
 
-        Debug.Log(this.GetType().ToString() + " OnEnter method called.");
+        Debug.Log("Entering State " + this.GetType().ToString() + " (" + duration + " s duration)");
         coroutine = stateMachine.owner.GetComponent<PlayerAbilityManager>().StartCoroutine(RunUntilComplete());
     }
 
     private IEnumerator RunUntilComplete()
     {
-        Debug.Log(this.GetType().ToString() + " coroutine started.");
         yield return new WaitForSeconds(duration);
-        Debug.Log(this.GetType().ToString() + " state change event invoked.");
+        
         stateMachine.InvokeStateCompleted();
     }
 
@@ -61,7 +66,6 @@ public abstract class BaseAbilityState : IState
             behaviour.OnExit();
         }
 
-        Debug.Log(this.GetType().ToString() + " OnExit method called.");
         coroutine = null;
     }
 }

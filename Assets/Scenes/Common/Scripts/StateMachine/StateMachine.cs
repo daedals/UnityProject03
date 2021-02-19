@@ -8,6 +8,7 @@ public delegate void SubscribtableAction();
 public abstract class StateMachine
 {
     public IState currentState;
+    public IState nextState;
 
     private Dictionary<System.Type, List<Transition>> _transitions = new Dictionary<System.Type, List<Transition>>();
     private List<Transition> _currentTransitions = new List<Transition>();
@@ -29,14 +30,20 @@ public abstract class StateMachine
     {
         while (true)
         {
+            if (nextState != null) SetState();
             currentState?.Tick();
             yield return 0;
         }
     }
 
-    protected void SetState(IState state)
+    protected void InitiateTransition(IState state)
     {
-        if (state == currentState) return;
+        nextState = state;
+    }
+
+    protected void SetState()
+    {
+        if (nextState == currentState) return;
 
         currentState?.OnExit();
 
@@ -45,9 +52,10 @@ public abstract class StateMachine
             transition.Unsubscribe();
         }
 
-        currentState = state;
+        currentState = nextState;
+        nextState = null;
         
-        Debug.Log("Subscribing to state " + currentState.GetType().ToString() + "s possible transitions");
+        // Debug.Log("Subscribing to state " + currentState.GetType().ToString() + "s possible transitions");
 
         _transitions.TryGetValue(currentState.GetType(), out _currentTransitions);
 
@@ -93,12 +101,12 @@ public abstract class StateMachine
             _transitions[from.GetType()] = transitions;
         }
 
-        transitions.Add(new Transition(to, ref trigger, SetState));
+        transitions.Add(new Transition(to, ref trigger, InitiateTransition));
     }
 
     protected void AddAnyTransition(IState to, ref SubscribtableAction trigger)
     {
-        Transition transition = new Transition(to, ref trigger, SetState);
+        Transition transition = new Transition(to, ref trigger, InitiateTransition);
         _anyTransitions.Add(transition);
         transition.Subscribe();
     }

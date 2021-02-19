@@ -21,6 +21,16 @@ public class Ability : ICloneable
     {
         this.owner = owner;
         stateMachine = new AbilityStateMachine(behaviours, template, owner);
+
+        Debug.Log("Initializing " + template.name);
+
+        foreach (BaseBehaviour behaviour in behaviours)
+        {
+            Debug.Log("Added " + behaviour.GetType().ToString());
+            behaviour.Initialize(stateMachine);
+        }
+
+        stateMachine.Initialize();
     }
 
     public object Clone()

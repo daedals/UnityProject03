@@ -4,46 +4,22 @@ using UnityEngine;
 using Mirror;
 
 
-[System.Serializable]
-[CreateAssetMenu(menuName = "Behaviour/Linear Projectile")]
-public class LinearProjectileData : BaseBehaviourData
-{
-    [SerializeField] public GameObject projectilePrefab = null;
-
-    [Header("Projectile Settings")]
-    [SerializeField] public float movementSpeed = 3f;
-    [SerializeField] public float lifeTime = 3f;
-
-    public LinearProjectileData()
-    {
-        ExecutionMask = BaseBehaviour.ExecutionMask.CASTING;
-    }
-}
 
 public class LinearProjectile : BaseBehaviour
 {
-    [SerializeField] GameObject projectilePrefab = null;
-
-    [Header("Projectile Settings")]
-    [SerializeField] float movementSpeed = 3f;
-    [SerializeField] float lifeTime = 3f;
-
-    private AbilityStateMachine stateMachine = null;
     private const string projectileSpawnTransform = "ProjectileSpawnTransform";
 
     private List<Projectile> projectileInstances = new List<Projectile>();
-    
-    public LinearProjectile(LinearProjectileData data) : base(data) {}
 
-    public void Initialize(AbilityStateMachine stateMachine)
-    {
-        this.stateMachine = stateMachine;
-    }
+    public new LinearProjectileData Data { get; protected set; }
+
+	public LinearProjectile(LinearProjectileData data) : base(data) {}
 
     public override void Tick() {}
 
     public override void OnEnter()
     {
+        Debug.Log("Hello");
         stateMachine.StateCompleted += OnStateCompleted; 
     }
 
@@ -58,7 +34,7 @@ public class LinearProjectile : BaseBehaviour
 
 
         Projectile projectile = projectileInstance.GetComponent<Projectile>();
-        projectile.Initialize(movementSpeed, lifeTime);
+        projectile.Initialize(Data.movementSpeed, Data.lifeTime);
 
         Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
 
@@ -79,7 +55,7 @@ public class LinearProjectile : BaseBehaviour
             return null;
         }
 
-        GameObject projectileInstance = GameObject.Instantiate(projectilePrefab, spawn.position, spawn.rotation);
+        GameObject projectileInstance = GameObject.Instantiate(Data.projectilePrefab, spawn.position, spawn.rotation);
         NetworkServer.Spawn(projectileInstance);
 
         return projectileInstance;
@@ -98,6 +74,6 @@ public class LinearProjectile : BaseBehaviour
 
     public override object Clone()
     {
-        return new LinearProjectile((LinearProjectileData)data);
+        return new LinearProjectile(Data);
     }
 }

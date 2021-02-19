@@ -49,9 +49,6 @@ public class AbilityEditor : Editor
 
 		AbilityTemplate template = (AbilityTemplate)target;
 
-
-		// EditorGUILayout.LabelField(template.Name, EditorStyles.boldLabel);
-
 		HandleTextField("Name", "Name");
 
 		HandleTextArea("Description", "Description");

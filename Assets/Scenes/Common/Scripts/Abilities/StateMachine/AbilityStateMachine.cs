@@ -14,13 +14,18 @@ public class AbilityStateMachine : StateMachine
 	private readonly List<BaseBehaviour> behaviours = new List<BaseBehaviour>();
 
 	public GameObject owner;
+	public AbilityTemplate template;
 
 	
 	public AbilityStateMachine(List<BaseBehaviour> behaviours, AbilityTemplate template, GameObject owner) : base(owner?.GetComponent<PlayerAbilityManager>())
 	{
 		this.behaviours = behaviours;
 		this.owner = owner;
+		this.template = template;
+	}
 
+	public void Initialize()
+	{
 		/* TODO: properly setup data */
 		channelDuration = template.channelDuration;
 		castDuration = template.castDuration;
@@ -54,7 +59,9 @@ public class AbilityStateMachine : StateMachine
 		AddAnyTransition(disabled, ref AbilityDisabled);
 
 		// set starting position
-		SetState(inactive);
+		InitiateTransition(inactive);
+		SetState();
+		
 		Debug.Log("Initialized State machine to state " + currentState.GetType().ToString());
 	}
 

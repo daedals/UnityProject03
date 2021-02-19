@@ -17,14 +17,8 @@ public abstract class BaseBehaviourData : ScriptableObject
 
 	public BaseBehaviour.ExecutionMask ExecutionMask 
 	{
-		get 
-		{
-			return executionMask;
-		}
-		protected set
-		{
-			executionMask = value;
-		}
+		get => executionMask;
+		protected set => executionMask = value;
 	}
 }
 
@@ -43,12 +37,18 @@ public abstract class BaseBehaviour : System.ICloneable
 		INTERRUPTED = 1 << 6,
         ALL = 1 << 7 - 1
 	}
-	public BaseBehaviourData data;
+	public BaseBehaviourData Data { get; protected set; }
+    protected AbilityStateMachine stateMachine = null;
 
 	public BaseBehaviour(BaseBehaviourData data)
 	{
-		this.data = data;
+		this.Data = data;
 	}
+
+    public void Initialize(AbilityStateMachine stateMachine)
+    {
+        this.stateMachine = stateMachine;
+    }
 
     public abstract void Tick();
     public abstract void OnEnter();
