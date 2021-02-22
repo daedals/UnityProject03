@@ -50,8 +50,8 @@ public abstract class BaseBehaviour : System.ICloneable
         this.stateMachine = stateMachine;
     }
 
-    public abstract void Tick();
-    public abstract void OnEnter();
-    public abstract void OnExit();
+    public abstract void Tick(BaseAbilityState.AbilityStateContext ctx);
+    public abstract void OnEnter(BaseAbilityState.AbilityStateContext ctx);
+    public abstract void OnExit(BaseAbilityState.AbilityStateContext ctx);
     public abstract object Clone();
 }

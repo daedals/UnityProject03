@@ -20,16 +20,13 @@ public class LinearProjectile : BaseBehaviour
     */
 	public LinearProjectile(LinearProjectileData data) : base(data) {}
 
-    public override void Tick() {}
+    public override void Tick(BaseAbilityState.AbilityStateContext ctx) {}
 
-    public override void OnEnter()
-    {
-        stateMachine.StateCompleted += OnStateCompleted;
-    }
+    public override void OnEnter(BaseAbilityState.AbilityStateContext ctx) {}
 
-    public override void OnExit()
+    public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
     {
-        stateMachine.StateCompleted -= OnStateCompleted;
+        if (ctx.stateCompleted) OnStateCompleted();
     }
 
     private void OnStateCompleted()

@@ -8,7 +8,8 @@ public class ChannelingBar : BaseBehaviour
     private Slider _slider = null;
     private Image _fill = null;
 
-    private float elapsedDuration;
+    private Color _fillcolor;
+    private Coroutine fade;
 
 	public ChannelingBar(ChannelingBarData data) : base(data) {}
 
@@ -17,7 +18,7 @@ public class ChannelingBar : BaseBehaviour
 		return new ChannelingBar((ChannelingBarData)Data);
 	}
 
-	public override void OnEnter()
+	public override void OnEnter(BaseAbilityState.AbilityStateContext ctx)
 	{
         if (_slider == null || _fill == null)
         {
@@ -26,26 +27,49 @@ public class ChannelingBar : BaseBehaviour
 
             _slider = reference.GetComponent<Slider>();
             _fill = reference.Find("Fill").GetComponent<Image>();
+            _fillcolor = _fill.color;
         }
 
-        elapsedDuration = 0f;
-        UpdateSlider();
+        if (fade != null)
+        {
+            _slider.StopCoroutine(fade);
+            _fill.color = _fillcolor;
+            fade = null;
+        }
+
+        UpdateSlider(ctx.duration, ctx.elapsedTime);
 	}
 
-	public override void OnExit()
+	public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
 	{
-        elapsedDuration = 0f;
-        UpdateSlider();
+        fade = _slider.StartCoroutine(SliderCancelFade(ctx));
 	}
 
-	public override void Tick()
-	{
-        elapsedDuration += Time.deltaTime;
-        UpdateSlider();
-	}
-
-    private void UpdateSlider()
+    private IEnumerator SliderCancelFade(BaseAbilityState.AbilityStateContext ctx)
     {
-        _slider.value = elapsedDuration / stateMachine.channelDuration;
+        if (!ctx.stateCompleted) _fill.color = new Color(1f, 0f, 0f);
+
+        float elapsedTime = 0f;
+        float duration = .5f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            _fill.color = new Color(_fill.color.r, _fill.color.g, _fill.color.b, 1f - (elapsedTime/duration));
+            yield return 0;
+        }
+
+        _fill.color = _fillcolor;
+        UpdateSlider(ctx.duration, 0f);
+    }
+
+	public override void Tick(BaseAbilityState.AbilityStateContext ctx)
+	{
+        UpdateSlider(ctx.duration, ctx.elapsedTime);
+	}
+
+    private void UpdateSlider(float duration, float elapsedTime)
+    {
+        _slider.value = elapsedTime / duration;
     }
 }
