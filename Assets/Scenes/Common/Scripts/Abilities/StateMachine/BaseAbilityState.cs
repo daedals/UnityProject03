@@ -60,7 +60,7 @@ public abstract class BaseAbilityState : IState
             behaviour.OnEnter(new AbilityStateContext(stateCompleted, duration, elapsedTime));
         }
 
-        Debug.Log("OnEnter " + this.GetType().ToString() + " (" + duration + " s duration)");
+        Debug.Log("Entering " + this.GetType().ToString() + " (" + duration + "s duration)");
         coroutine = stateMachine.owner.GetComponent<PlayerAbilityManager>().StartCoroutine(RunUntilComplete());
     }
 
@@ -85,8 +85,11 @@ public abstract class BaseAbilityState : IState
             behaviour.OnExit(new AbilityStateContext(stateCompleted, duration, elapsedTime));
         }
 
+        Debug.Log(this.GetType().ToString() + (stateCompleted ? " completed." : " canceled after " + elapsedTime));
+
         stateCompleted = false;
-        Debug.Log("OnExit " + this.GetType().ToString());
+        
+        if (coroutine != null) stateMachine.owner.GetComponent<PlayerAbilityManager>().StopCoroutine(coroutine);
         coroutine = null;
     }
 }
