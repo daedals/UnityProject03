@@ -20,15 +20,15 @@ public class LinearProjectile : BaseBehaviour
     */
 	public LinearProjectile(LinearProjectileData data) : base(data) {}
 
-    public override void Tick(BaseAbilityState.AbilityStateContext ctx) {}
+    /* TODO: make this an IRotationModifier and on enter add it to the players rotationinput, on tick update to mouseposition, on exit remove from RotationHandler */
 
-    public override void OnEnter(BaseAbilityState.AbilityStateContext ctx) {}
-
+    [Client]
     public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
     {
         if (ctx.stateCompleted) OnStateCompleted();
     }
 
+    [Client]
     private void OnStateCompleted()
     {
         GameObject projectileInstance = CmdRequestProjectileSpawn();
@@ -53,7 +53,7 @@ public class LinearProjectile : BaseBehaviour
     [Command]
     private GameObject CmdRequestProjectileSpawn()
     {
-        Transform spawn = stateMachine.owner.transform.Find(projectileSpawnTransform);
+        Transform spawn = ability.owner.transform.Find(projectileSpawnTransform);
 
         if (spawn == null)
         {
@@ -67,12 +67,23 @@ public class LinearProjectile : BaseBehaviour
         return projectileInstance;
     }
 
+    [Client]
     private void OnTargetHit(Projectile projectile, GameObject other)
     {
         // explode projectile
+        ability.SignalTargetHit(other);
+
+        CmdDestroyProjectile(projectile);
     }
 
+    [Client]
     private void OnLifeTimeEnded(Projectile projectile)
+    {
+        CmdDestroyProjectile(projectile);
+    }
+
+    [Command]
+    private void CmdDestroyProjectile(Projectile projectile)
     {
         Projectile.Destroy(projectile.gameObject);
     }

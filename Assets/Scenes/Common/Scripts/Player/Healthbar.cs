@@ -9,8 +9,6 @@ public class Healthbar : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private HealthHandler _healthHandler = null;
-    [SerializeField] private Slider _slider = null;
-    [SerializeField] private Image _fill = null;
     [SerializeField] private Gradient _gradient = null;
     [SerializeField] private List<GameObject> _healthBars = new List<GameObject>();
     
@@ -28,6 +26,17 @@ public class Healthbar : NetworkBehaviour
         _healthHandler.EventPlayerDeath -= RpcHandlePlayerDeath;
     }
 
+    public void Add(GameObject healthbar)
+    {
+        _healthBars.Add(healthbar);
+        UpdateGradient();
+    }
+
+    public void Remove(GameObject healthbar)
+    {
+        _healthBars.Remove(healthbar);
+    }
+
     [ClientRpc]
     private void RpcHandleHealthChanged(float currentHealth, float maximumHealth)
     {
@@ -35,7 +44,7 @@ public class Healthbar : NetworkBehaviour
         {
             healthbar.GetComponent<Slider>().value = currentHealth / maximumHealth;
         }
-        
+
         UpdateGradient();
     }
 

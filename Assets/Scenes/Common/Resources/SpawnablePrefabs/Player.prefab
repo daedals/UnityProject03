@@ -277,6 +277,7 @@ GameObject:
   - component: {fileID: 1744300020674181122}
   - component: {fileID: 1744300020674181243}
   - component: {fileID: 4380907694709000749}
+  - component: {fileID: 3679920529406828236}
   - component: {fileID: 94267983407735258}
   - component: {fileID: 3358350769245753416}
   - component: {fileID: 4930775997195825461}
@@ -597,8 +598,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _healthHandler: {fileID: 1744300020674181243}
-  _slider: {fileID: 4759327364825502148}
-  _fill: {fileID: 4759327364684719216}
   _gradient:
     serializedVersion: 2
     key0: {r: 1, g: 0, b: 0, a: 1}
@@ -630,7 +629,22 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   _healthBars:
   - {fileID: 4759327364825502151}
-  - {fileID: 1993695161982991529}
+--- !u!114 &3679920529406828236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744300020674181134}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a45dcd8a1969ca43b7c05f19d19e3aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  HUD: {fileID: 2084915754035969091}
+  healthbar: {fileID: 4380907694709000749}
 --- !u!114 &94267983407735258
 MonoBehaviour:
   m_ObjectHideFlags: 0

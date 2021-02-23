@@ -18,18 +18,20 @@ public class ChannelingBar : BaseBehaviour
 		return new ChannelingBar((ChannelingBarData)Data);
 	}
 
+	public override void Initialize(Ability ability)
+	{
+		base.Initialize(ability);
+        
+        Transform reference = ability.owner.transform.Find("WorldSpaceUI").transform.Find("Canvas").transform.Find("ChannelingBar");
+
+        _slider = reference.GetComponent<Slider>();
+        _fill = reference.Find("Fill").GetComponent<Image>();
+        _fillcolor = _fill.color;
+	}
+
+
 	public override void OnEnter(BaseAbilityState.AbilityStateContext ctx)
 	{
-        if (_slider == null || _fill == null)
-        {
-            // TODO: this should be called in constructor, but it throws errors because statemachine has no owner yet
-            Transform reference = stateMachine.owner.transform.Find("WorldSpaceUI").transform.Find("Canvas").transform.Find("ChannelingBar");
-
-            _slider = reference.GetComponent<Slider>();
-            _fill = reference.Find("Fill").GetComponent<Image>();
-            _fillcolor = _fill.color;
-        }
-
         if (fade != null)
         {
             _slider.StopCoroutine(fade);
@@ -61,6 +63,7 @@ public class ChannelingBar : BaseBehaviour
 
         _fill.color = _fillcolor;
         UpdateSlider(ctx.duration, 0f);
+        fade = null;
     }
 
 	public override void Tick(BaseAbilityState.AbilityStateContext ctx)

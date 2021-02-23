@@ -51,6 +51,7 @@ public class Projectile : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             // TODO: determine if gameObject has the right tag
+            // exclude the casting player for some time (TBD)
 
             TargetHit?.Invoke(this, other.gameObject);
         }

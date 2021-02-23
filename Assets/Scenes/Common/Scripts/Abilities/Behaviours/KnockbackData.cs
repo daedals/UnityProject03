@@ -9,4 +9,9 @@ public class KnockbackData : BaseBehaviourData
 {
     [Header("Knockback Settings")]
     [SerializeField] float force = 3f;
+    
+    public KnockbackData()
+    {
+        ExecutionMask = BaseBehaviour.ExecutionMask.NONE;
+    }
 }

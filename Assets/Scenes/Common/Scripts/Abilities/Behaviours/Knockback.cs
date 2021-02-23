@@ -6,23 +6,23 @@ public class Knockback : BaseBehaviour
 {
 	public Knockback(KnockbackData data) : base((BaseBehaviourData)data) {}
 
-	public override void Tick(BaseAbilityState.AbilityStateContext ctx)
+	public override void Initialize(Ability ability)
 	{
-		throw new System.NotImplementedException();
+		base.Initialize(ability);
+
+		ability.AbilityHitTarget += OnAbilityTargetHit;
 	}
 
-	public override void OnEnter(BaseAbilityState.AbilityStateContext ctx)
+	private void OnAbilityTargetHit(GameObject other)
 	{
-		throw new System.NotImplementedException();
-	}
-
-	public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
-	{
-		throw new System.NotImplementedException();
+		// we need a transform here to now from where the knockback shold be applied from
+		// in case of a linear projectile, the projectiles position
+		// in case of a ability around the player, the players position
+		Debug.Log("Ability hit Target, Knockback should occur now (but doesn't because there is no logic for it)");
 	}
 
     public override object Clone()
     {
-        return null;
+		return new Knockback((KnockbackData)Data);
     }
 }

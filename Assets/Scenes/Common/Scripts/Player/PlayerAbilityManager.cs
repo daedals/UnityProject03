@@ -19,15 +19,15 @@ public class PlayerAbilityManager : NetworkBehaviour
         if (!string.IsNullOrEmpty(profile.Ability1))
         {
             ability1 = AbilityDatabase.GetAbility(profile.Ability1);
-            ability1.SetOwner(gameObject);
+            ability1.Initialize(gameObject);
 
-            PlayerInputHandler.OnLMB += ability1.stateMachine.SetTrigger;
+            PlayerInputHandler.OnLMB += ability1.SetTrigger;
         }
 
         if (!string.IsNullOrEmpty(profile.Ability2))
         {
             ability2 = AbilityDatabase.GetAbility(profile.Ability2);
-            ability2.SetOwner(gameObject);
+            ability2.Initialize(gameObject);
 
             /* TODO: set trigger */
         }
@@ -35,7 +35,7 @@ public class PlayerAbilityManager : NetworkBehaviour
         if (!string.IsNullOrEmpty(profile.Ability3))
         {
             ability3 = AbilityDatabase.GetAbility(profile.Ability3);
-            ability3.SetOwner(gameObject);
+            ability3.Initialize(gameObject);
             
             /* TODO: set trigger */
         }
@@ -51,6 +51,6 @@ public class PlayerAbilityManager : NetworkBehaviour
 
     private void OnDestroy()
     {
-        if (ability1 != null) PlayerInputHandler.OnLMB -= ability1.stateMachine.SetTrigger;
+        if (ability1 != null) PlayerInputHandler.OnLMB -= ability1.SetTrigger;
     }
 }

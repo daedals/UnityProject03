@@ -5,7 +5,7 @@ using System;
 
 public delegate void SubscribtableAction();
 
-public abstract class StateMachine
+public class StateMachine
 {
     public IState currentState;
     public IState nextState;
@@ -93,7 +93,13 @@ public abstract class StateMachine
         public void Unsubscribe() => active = false;
     }
 
-    protected void AddTransition(IState from, IState to, ref SubscribtableAction trigger)
+    public void Start(IState state)
+    {
+		InitiateTransition(state);
+		SetState();
+    }
+
+    public void AddTransition(IState from, IState to, ref SubscribtableAction trigger)
     {
         if (_transitions.TryGetValue(from.GetType(), out var transitions) == false)
         {
@@ -104,7 +110,7 @@ public abstract class StateMachine
         transitions.Add(new Transition(to, ref trigger, InitiateTransition));
     }
 
-    protected void AddAnyTransition(IState to, ref SubscribtableAction trigger)
+    public void AddAnyTransition(IState to, ref SubscribtableAction trigger)
     {
         Transition transition = new Transition(to, ref trigger, InitiateTransition);
         _anyTransitions.Add(transition);

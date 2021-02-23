@@ -38,20 +38,20 @@ public abstract class BaseBehaviour : System.ICloneable
         ALL = 1 << 6 - 1
 	}
 	public BaseBehaviourData Data { get; protected set; }
-    protected AbilityStateMachine stateMachine = null;
+    protected Ability ability = null;
 
 	public BaseBehaviour(BaseBehaviourData data)
 	{
 		this.Data = data;
 	}
 
-    public void Initialize(AbilityStateMachine stateMachine)
+    public virtual void Initialize(Ability ability)
     {
-        this.stateMachine = stateMachine;
+        this.ability = ability;
     }
 
-    public abstract void Tick(BaseAbilityState.AbilityStateContext ctx);
-    public abstract void OnEnter(BaseAbilityState.AbilityStateContext ctx);
-    public abstract void OnExit(BaseAbilityState.AbilityStateContext ctx);
+    public virtual void Tick(BaseAbilityState.AbilityStateContext ctx) {}
+    public virtual void OnEnter(BaseAbilityState.AbilityStateContext ctx) {}
+    public virtual void OnExit(BaseAbilityState.AbilityStateContext ctx) {}
     public abstract object Clone();
 }

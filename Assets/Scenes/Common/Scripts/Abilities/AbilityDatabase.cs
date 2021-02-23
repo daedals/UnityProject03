@@ -29,23 +29,12 @@ public class AbilityDatabase : NetworkBehaviour
 
     void LoadAbilityData()
     {
-        // var abilities = Resources.LoadAll<DataDrivenAbility>("Abilities") as DataDrivenAbility[];
-        // Debug.Log("Loading " + abilities.Length + " abilites:");
-        // for (int i = 0; i < abilities.Length; i++)
-        // {
-        //     DataDrivenAbility rawAbility = abilities[i];
-        //     Debug.Log(rawAbility.abilityData.Name);
-        //     Ability ability = DataDrivenAbility.Parse(rawAbility);
-        //     Database[ability.abilityData.Name] = ability;
-        // }
         var abilities = Resources.LoadAll<AbilityTemplate>("Abilities") as AbilityTemplate[];
-        Debug.Log("Loading " + abilities.Length + " AbilityTemplates");
+        Debug.Log("Loading " + abilities.Length + " AbilityTemplate" + (abilities.Length > 1 ? "s" : ""));
 
         foreach (AbilityTemplate template in abilities)
         {
-            Ability ability = template.Parse();
-            Database[template.Name] = ability;
-            
+            Database[template.Name] = Parse(template);
             Debug.Log("Loaded Ability: " + template.Name);
         }
     }
@@ -60,5 +49,21 @@ public class AbilityDatabase : NetworkBehaviour
         }
 
         throw new System.Exception("Ability: " + abilityName + " doesn't exist");
+    }
+    
+    public Ability Parse(AbilityTemplate template)
+    {
+        List<BaseBehaviour> behaviourInstances = new List<BaseBehaviour>();
+
+        foreach(BaseBehaviourData data in template.behaviours)
+        {
+            System.Type T = data.GetBehaviourType();
+
+            var obj = (BaseBehaviour)System.Activator.CreateInstance(T, new object[] { data });
+            behaviourInstances.Add(obj);
+        }
+
+        Ability ability = new Ability(behaviourInstances, template);
+        return ability;
     }
 }
