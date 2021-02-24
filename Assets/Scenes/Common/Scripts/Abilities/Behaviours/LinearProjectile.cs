@@ -22,18 +22,22 @@ public class LinearProjectile : BaseBehaviour
 
     /* TODO: make this an IRotationModifier and on enter add it to the players rotationinput, on tick update to mouseposition, on exit remove from RotationHandler */
 
-    [Client]
     public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
     {
         if (ctx.stateCompleted) OnStateCompleted();
     }
 
-    [Client]
     private void OnStateCompleted()
     {
-        GameObject projectileInstance = CmdRequestProjectileSpawn();
+        Transform spawn = ability.owner.transform.Find(projectileSpawnTransform);
 
-        // LinearProjectileData Data = (LinearProjectileData)this.Data;
+        if (spawn == null)
+        {
+            Debug.Log("No spawning Position could be located for a projectile.");
+            return;
+        }
+
+        GameObject projectileInstance = Projectile.RequestSpawn(((LinearProjectileData)Data).projectilePrefab, spawn);
 
         Projectile projectile = projectileInstance.GetComponent<Projectile>();
         projectile.Initialize(((LinearProjectileData)Data).movementSpeed, ((LinearProjectileData)Data).lifeTime);
@@ -50,39 +54,19 @@ public class LinearProjectile : BaseBehaviour
         Debug.Log("Shooting bullet.");
     }
 
-    [Command]
-    private GameObject CmdRequestProjectileSpawn()
-    {
-        Transform spawn = ability.owner.transform.Find(projectileSpawnTransform);
-
-        if (spawn == null)
-        {
-            Debug.Log("No spawning Position could be located for a projectile.");
-            return null;
-        }
-
-        GameObject projectileInstance = GameObject.Instantiate(((LinearProjectileData)Data).projectilePrefab, spawn.position, spawn.rotation);
-        NetworkServer.Spawn(projectileInstance);
-
-        return projectileInstance;
-    }
-
-    [Client]
     private void OnTargetHit(Projectile projectile, GameObject other)
     {
         // explode projectile
-        ability.SignalTargetHit(other);
+        ability.SignalTargetHit(projectile.gameObject, other);
 
         CmdDestroyProjectile(projectile);
     }
 
-    [Client]
     private void OnLifeTimeEnded(Projectile projectile)
     {
         CmdDestroyProjectile(projectile);
     }
 
-    [Command]
     private void CmdDestroyProjectile(Projectile projectile)
     {
         Projectile.Destroy(projectile.gameObject);

@@ -13,7 +13,7 @@ public class Knockback : BaseBehaviour
 		ability.AbilityHitTarget += OnAbilityTargetHit;
 	}
 
-	private void OnAbilityTargetHit(GameObject other)
+	private void OnAbilityTargetHit(GameObject obj, GameObject other)
 	{
 		// we need a transform here to now from where the knockback shold be applied from
 		// in case of a linear projectile, the projectiles position

@@ -118,8 +118,9 @@ public class Ability : ICloneable
 	public event SubscribtableAction AbilityInterrupted;
 	public void InterruptAbility() => AbilityInterrupted?.Invoke();
 
-    public event Action<GameObject> AbilityHitTarget;
-    public void SignalTargetHit(GameObject other) => AbilityHitTarget?.Invoke(other);
+
+    public event Action<GameObject, GameObject> AbilityHitTarget;
+    public void SignalTargetHit(GameObject obj, GameObject other) => AbilityHitTarget?.Invoke(obj, other);
 
 	#endregion
 }
