@@ -50,6 +50,18 @@ public class NetworkManagerCustom : NetworkManager
         }
 	}
 
+	// public override void OnDestroy()
+	// {
+	// 	base.OnDestroy();
+        
+    //     var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
+
+    //     foreach(var prefab in spawnablePrefabs)
+    //     {
+    //         ClientScene.UnregisterPrefab(prefab);
+    //     }
+	// }
+
 	public override void OnClientConnect(NetworkConnection conn)
 	{
         base.OnClientConnect(conn);

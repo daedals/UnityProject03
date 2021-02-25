@@ -5914,6 +5914,8 @@ MonoBehaviour:
     type: 3}
   _abilityDatabase: {fileID: 8464272563834245240, guid: 4797cdbc555b56a419ef75a2c870d709,
     type: 3}
+  _prefabSpawnManager: {fileID: 5448503403294257402, guid: 62f869b547a800f499b7660f919b5701,
+    type: 3}
 --- !u!4 &1985367596
 Transform:
   m_ObjectHideFlags: 0

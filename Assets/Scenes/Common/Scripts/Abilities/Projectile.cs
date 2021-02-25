@@ -12,20 +12,6 @@ public class Projectile : NetworkBehaviour
     private float movementSpeed;
     private float lifeTime;
 
-    public static GameObject RequestSpawn(GameObject prefab, Transform spawn)
-    {
-        return CmdRequestSpawn(prefab, spawn)
-    }
-
-    [Command]
-    private static GameObject CmdRequestSpawn(GameObject prefab, Transform spawn)
-    {
-        GameObject projectileInstance = GameObject.Instantiate(prefab, spawn.position, spawn.rotation);
-        NetworkServer.Spawn(projectileInstance);
-
-        return projectileInstance;
-    }
-
     public void Initialize(float movementSpeed, float lifeTime)
     {
         this.movementSpeed = movementSpeed;
