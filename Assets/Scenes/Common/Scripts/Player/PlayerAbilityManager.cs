@@ -14,37 +14,36 @@ public class PlayerAbilityManager : NetworkBehaviour
 
 	public override void OnStartAuthority()
 	{
+        Debug.Log("hi");
         enabled = true;
 
         if (!string.IsNullOrEmpty(profile.Ability1))
         {
-            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability1);
+            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability1, gameObject);
             abilityGameObject.transform.parent = transform;
 
             ability1 = abilityGameObject.GetComponent<Ability>();
-            ability1.Initialize(gameObject);
+            abilityGameObject.SetActive(true);
 
             PlayerInputHandler.OnLMB += ability1.SetTrigger;
         }
 
         if (!string.IsNullOrEmpty(profile.Ability2))
         {
-            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability1);
+            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability2, gameObject);
             abilityGameObject.transform.parent = transform;
 
             ability2 = abilityGameObject.GetComponent<Ability>();
-            ability2.Initialize(gameObject);
 
             /* TODO: set trigger */
         }
 
         if (!string.IsNullOrEmpty(profile.Ability3))
         {
-            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability1);
+            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability3, gameObject);
             abilityGameObject.transform.parent = transform;
 
             ability3 = abilityGameObject.GetComponent<Ability>();
-            ability3.Initialize(gameObject);
             
             /* TODO: set trigger */
         }
@@ -53,9 +52,9 @@ public class PlayerAbilityManager : NetworkBehaviour
 
     private void Update()
     {
-        if (ability1.stateMachine == null) Debug.Log("no statemachine");
-        if (ability1.stateMachine.currentState == null) Debug.Log("no currentState");
-        if (ability1 != null) Ability1State = ability1.stateMachine.currentState.GetType().ToString();
+        // if (ability1.stateMachine == null) Debug.Log("no statemachine");
+        // if (ability1.stateMachine.currentState == null) Debug.Log("no currentState");
+        // if (ability1 != null) Ability1State = ability1.stateMachine.currentState.GetType().ToString();
     }
 
     private void OnDestroy()

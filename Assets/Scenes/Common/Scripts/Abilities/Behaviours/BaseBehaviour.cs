@@ -1,16 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
 [System.Serializable]
 public abstract class BaseBehaviourData : ScriptableObject
 {
-	public System.Type GetBehaviourType()
-	{
-		string s = this.GetType().ToString();
-		return System.Type.GetType(s.Substring(0, s.Length - 4));
-	}
-
 	private bool executionMaskChangeable = false;
 
     private BaseBehaviour.ExecutionMask executionMask;
@@ -20,10 +15,23 @@ public abstract class BaseBehaviourData : ScriptableObject
 		get => executionMask;
 		protected set => executionMask = value;
 	}
+
+	public GameObject CreateBehaviourObject()
+	{
+		string s = this.GetType().ToString();
+		string behaviourName = s.Substring(0, s.Length - 4);
+
+		GameObject behaviourObject = new GameObject(behaviourName);
+
+		var behaviour = behaviourObject.AddComponent(System.Type.GetType(behaviourName)) as BaseBehaviour;
+		behaviour.Data = this;
+
+		return behaviourObject;
+	}
 }
 
 
-public abstract class BaseBehaviour : System.ICloneable
+public abstract class BaseBehaviour : NetworkBehaviour
 {
     [System.Flags]
 	public enum ExecutionMask
@@ -37,13 +45,8 @@ public abstract class BaseBehaviour : System.ICloneable
 		INTERRUPTED = 1 << 5,
         ALL = 1 << 6 - 1
 	}
-	public BaseBehaviourData Data { get; protected set; }
+	public BaseBehaviourData Data { get; set; }
     protected Ability ability = null;
-
-	public BaseBehaviour(BaseBehaviourData data)
-	{
-		this.Data = data;
-	}
 
     public virtual void Initialize(Ability ability)
     {
@@ -53,5 +56,5 @@ public abstract class BaseBehaviour : System.ICloneable
     public virtual void Tick(BaseAbilityState.AbilityStateContext ctx) {}
     public virtual void OnEnter(BaseAbilityState.AbilityStateContext ctx) {}
     public virtual void OnExit(BaseAbilityState.AbilityStateContext ctx) {}
-    public abstract object Clone();
+
 }

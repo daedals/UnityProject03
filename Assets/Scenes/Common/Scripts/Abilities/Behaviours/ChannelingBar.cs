@@ -11,12 +11,7 @@ public class ChannelingBar : BaseBehaviour
     private Color _fillcolor;
     private Coroutine fade;
 
-	public ChannelingBar(ChannelingBarData data) : base(data) {}
-
-	public override object Clone()
-	{
-		return new ChannelingBar((ChannelingBarData)Data);
-	}
+	// public ChannelingBar(ChannelingBarData data) : base(data) {}
 
 	public override void Initialize(Ability ability)
 	{

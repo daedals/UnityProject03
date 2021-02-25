@@ -24,7 +24,8 @@ public class LinearProjectile : BaseBehaviour, ISpawnRequester
     everytime we use a derived BaseBehaviourData (such as LinearProjectileData) we have to cast to that inheriting class
     this is because c# doe not support return type covariance (to overwrite local Data property to the derived class)
     */
-	public LinearProjectile(LinearProjectileData data) : base(data) {}
+    
+	// public LinearProjectile(LinearProjectileData data) : base(data) {}
 
 	/* TODO: make this an IRotationModifier and on enter add it to the players rotationinput, on tick update to mouseposition, on exit remove from RotationHandler */
 
@@ -76,7 +77,7 @@ public class LinearProjectile : BaseBehaviour, ISpawnRequester
         }
 
         Debug.Log("Successfully fetched instance.");
-        
+
         System.Tuple<int, GameObject> instance = new Tuple<int, GameObject>(ticket, tuple.Item2);
 
         // SpawnedInstances.Add(instance);
@@ -115,9 +116,4 @@ public class LinearProjectile : BaseBehaviour, ISpawnRequester
     }
 
     private void RequestInstanceDespawn(int ticket) => ability.owner.GetComponent<PlayerPrefabPool>().RequestInstanceDespawn(this, ticket);
-
-    public override object Clone()
-    {
-        return new LinearProjectile((LinearProjectileData)Data);
-    }
 }

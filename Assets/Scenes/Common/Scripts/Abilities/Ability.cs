@@ -4,11 +4,9 @@ using UnityEngine;
 using System;
 using Mirror;
 
-public class Ability : MonoBehaviour
+public class Ability : NetworkBehaviour
 {
-    public StateMachine stateMachine;
-
-    [SerializeField]
+    public StateMachine stateMachine = null;
     public List<BaseBehaviour> behaviours;
     public AbilityTemplate template;
     public GameObject owner;
@@ -22,19 +20,17 @@ public class Ability : MonoBehaviour
             this.template = template;
         }
     */
-    public static Ability CreateAbilityComponent(GameObject where, List<BaseBehaviour> behaviours, AbilityTemplate template)
-    {
-        Ability ability = where.AddComponent<Ability>();
-        ability.behaviours = behaviours;
-        ability.template = template;
 
-        return ability;
-    }
-
-    public void Initialize(GameObject owner)
+    private void OnEnable()
     {
-        this.owner = owner;
-        stateMachine = new StateMachine(owner.GetComponent<PlayerAbilityManager>());
+        Transform root = transform.parent;
+
+        if (root.GetComponent<AbilityDatabase>() != null) throw new Exception("Ability is enabled in AbilityDatabase");
+
+        if (root.GetComponent<PlayerAbilityManager>() == null) throw new Exception("Abilities root object has no AbilityManager");
+
+        owner = root.gameObject;
+        stateMachine = new StateMachine();
 
         foreach (BaseBehaviour behaviour in behaviours)
         {
@@ -42,6 +38,13 @@ public class Ability : MonoBehaviour
         }
 
         SetupStatemachine();
+    }
+
+    private void Update()
+    {
+        if (stateMachine == null) return;
+
+        stateMachine.Tick();
     }
 
     private void SetupStatemachine()

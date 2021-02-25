@@ -16,24 +16,10 @@ public class StateMachine
 
     private static List<Transition> EmptyTransitions = new List<Transition>(capacity: 0);
 
-    private Coroutine update = null;
-
-    public StateMachine(MonoBehaviour coroutineSlave)
+    public void Tick()
     {
-        if (coroutineSlave != null)
-        {
-            update = coroutineSlave.StartCoroutine(Update());
-        }
-    }
-
-    protected IEnumerator Update()
-    {
-        while (true)
-        {
-            if (nextState != null) SetState();
-            currentState?.Tick();
-            yield return 0;
-        }
+        if (nextState != null) SetState();
+        currentState?.Tick();
     }
 
     protected void InitiateTransition(IState state)

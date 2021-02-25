@@ -21,4 +21,14 @@ public class AbilityTemplate : ScriptableObject
     [Header("Behaviours")]
     [SerializeField] public List<BaseBehaviourData> behaviours = new List<BaseBehaviourData>();
 
+	public GameObject CreateAbilityObject()
+	{
+		GameObject abilityObject = new GameObject(Name);
+        abilityObject.SetActive(false);
+
+		var ability = abilityObject.AddComponent<Ability>();
+		ability.template = this;
+
+		return abilityObject;
+	}
 }

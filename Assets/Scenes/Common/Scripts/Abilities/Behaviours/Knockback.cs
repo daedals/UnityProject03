@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Knockback : BaseBehaviour
 {
-	public Knockback(KnockbackData data) : base((BaseBehaviourData)data) {}
+	// public Knockback(KnockbackData data) : base((BaseBehaviourData)data) {}
 
 	public override void Initialize(Ability ability)
 	{
@@ -20,9 +20,4 @@ public class Knockback : BaseBehaviour
 		// in case of a ability around the player, the players position
 		Debug.Log("Ability hit Target, Knockback should occur now (but doesn't because there is no logic for it)");
 	}
-
-    public override object Clone()
-    {
-		return new Knockback((KnockbackData)Data);
-    }
 }

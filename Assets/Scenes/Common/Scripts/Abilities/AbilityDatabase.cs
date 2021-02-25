@@ -34,40 +34,40 @@ public class AbilityDatabase : NetworkBehaviour
 
         foreach (AbilityTemplate template in abilities)
         {
-            Database[template.Name] = Parse(template);
+            Database[template.Name] = ImplementAbility(template);
             Debug.Log("Loaded Ability: " + template.Name);
         }
     }
 
-    public static GameObject GetAbility(string abilityName)
+    public static GameObject GetAbility(string abilityName, GameObject player)
     {
         if (Instance == null) throw new System.Exception("No instance of AbilityDatabase found, function call failed.");
 
         if (Database.ContainsKey(abilityName))
         {
             GameObject abilityClone = Instantiate(Database[abilityName]);
+            // NetworkServer.Spawn(abilityClone, player.GetComponent<NetworkIdentity>().connectionToClient);
             return abilityClone;
         }
 
         throw new System.Exception("Ability: " + abilityName + " doesn't exist");
     }
     
-    public GameObject Parse(AbilityTemplate template)
+    public GameObject ImplementAbility(AbilityTemplate template)
     {
-        GameObject abilityGameObject = new GameObject(template.Name);
+        GameObject abilityGameObject = template.CreateAbilityObject();
         abilityGameObject.transform.SetParent(transform);
+
+        // abilityGameObject.AddComponent<NetworkIdentity>();
 
         List<BaseBehaviour> behaviourInstances = new List<BaseBehaviour>();
 
         foreach(BaseBehaviourData data in template.behaviours)
         {
-            System.Type T = data.GetBehaviourType();
-
-            var obj = (BaseBehaviour)System.Activator.CreateInstance(T, new object[] { data });
-            behaviourInstances.Add(obj);
+            GameObject behaviourGameObject = data.CreateBehaviourObject();
+            behaviourGameObject.transform.SetParent(abilityGameObject.transform);
         }
 
-        Ability.CreateAbilityComponent(abilityGameObject, behaviourInstances, template);
         return abilityGameObject;
     }
 }
