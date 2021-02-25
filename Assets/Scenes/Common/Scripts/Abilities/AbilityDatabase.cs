@@ -16,7 +16,7 @@ prefabs component "PlayerProfile") from the Database.
 
 public class AbilityDatabase : NetworkBehaviour
 {
-    private static Dictionary<string, Ability> Database = new Dictionary<string, Ability>();
+    private static Dictionary<string, GameObject> Database = new Dictionary<string, GameObject>();
     public static AbilityDatabase Instance { get; private set; }
 
     private void OnEnable()
@@ -39,20 +39,24 @@ public class AbilityDatabase : NetworkBehaviour
         }
     }
 
-    public static Ability GetAbility(string abilityName)
+    public static GameObject GetAbility(string abilityName)
     {
         if (Instance == null) throw new System.Exception("No instance of AbilityDatabase found, function call failed.");
 
         if (Database.ContainsKey(abilityName))
         {
-            return Database[abilityName].Clone() as Ability;
+            GameObject abilityClone = Instantiate(Database[abilityName]);
+            return abilityClone;
         }
 
         throw new System.Exception("Ability: " + abilityName + " doesn't exist");
     }
     
-    public Ability Parse(AbilityTemplate template)
+    public GameObject Parse(AbilityTemplate template)
     {
+        GameObject abilityGameObject = new GameObject(template.Name);
+        abilityGameObject.transform.SetParent(transform);
+
         List<BaseBehaviour> behaviourInstances = new List<BaseBehaviour>();
 
         foreach(BaseBehaviourData data in template.behaviours)
@@ -63,7 +67,7 @@ public class AbilityDatabase : NetworkBehaviour
             behaviourInstances.Add(obj);
         }
 
-        Ability ability = new Ability(behaviourInstances, template);
-        return ability;
+        Ability.CreateAbilityComponent(abilityGameObject, behaviourInstances, template);
+        return abilityGameObject;
     }
 }

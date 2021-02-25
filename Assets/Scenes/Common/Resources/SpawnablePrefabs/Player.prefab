@@ -262,6 +262,7 @@ GameObject:
   - component: {fileID: 9102827786971249117}
   - component: {fileID: 3492265908963231259}
   - component: {fileID: 9181557281704745927}
+  - component: {fileID: 1982599928712990033}
   - component: {fileID: 1744300020674181121}
   - component: {fileID: 1744300020674181126}
   - component: {fileID: 7588258639141380362}
@@ -350,7 +351,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   profile: {fileID: 3492265908963231259}
+  networkManager: {fileID: 0}
   Ability1State: 
+--- !u!114 &1982599928712990033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1744300020674181134}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 680d993e8ac63ab438ef4ccb57bb8a54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!143 &1744300020674181121
 CharacterController:
   m_ObjectHideFlags: 0

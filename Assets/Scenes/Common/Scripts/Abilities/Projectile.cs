@@ -12,8 +12,11 @@ public class Projectile : NetworkBehaviour
     private float movementSpeed;
     private float lifeTime;
 
-    public void Initialize(float movementSpeed, float lifeTime)
+    public int Ticket { get; private set; }
+
+    public void Initialize(int ticket, float movementSpeed, float lifeTime)
     {
+        Ticket = ticket;
         this.movementSpeed = movementSpeed;
         this.lifeTime = lifeTime;
 

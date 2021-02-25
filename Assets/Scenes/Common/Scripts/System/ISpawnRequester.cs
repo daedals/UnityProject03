@@ -6,5 +6,5 @@ public interface ISpawnRequester
 {
     ulong Id { get; set; }
 
-    Queue<ulong> CollectionTickets { get; set; }
+    // List<System.Tuple<int, GameObject>> SpawnedInstances { get; set; }
 }

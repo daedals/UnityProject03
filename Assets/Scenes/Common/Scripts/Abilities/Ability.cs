@@ -2,19 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Mirror;
 
-public class Ability : ICloneable
+public class Ability : MonoBehaviour
 {
     public StateMachine stateMachine;
-    public readonly List<BaseBehaviour> behaviours;
-    public readonly AbilityTemplate template;
+
+    [SerializeField]
+    public List<BaseBehaviour> behaviours;
+    public AbilityTemplate template;
     public GameObject owner;
 
+    /*
+    Factory method "CreateAbilityComponent" made constructor obsolete
 
-    public Ability(List<BaseBehaviour> behaviours, AbilityTemplate template)
+        public Ability(List<BaseBehaviour> behaviours, AbilityTemplate template)
+        {
+            this.behaviours = behaviours;
+            this.template = template;
+        }
+    */
+    public static Ability CreateAbilityComponent(GameObject where, List<BaseBehaviour> behaviours, AbilityTemplate template)
     {
-        this.behaviours = behaviours;
-        this.template = template;
+        Ability ability = where.AddComponent<Ability>();
+        ability.behaviours = behaviours;
+        ability.template = template;
+
+        return ability;
     }
 
     public void Initialize(GameObject owner)
@@ -62,22 +76,6 @@ public class Ability : ICloneable
 		
 		Debug.Log("Initialized State machine to state " + stateMachine.currentState.GetType().ToString());
     }
-
-    public object Clone()
-    {
-        List<BaseBehaviour> behavioursClone = new List<BaseBehaviour>();
-
-        foreach (BaseBehaviour behaviour in behaviours)
-        {
-            behavioursClone.Add(behaviour.Clone() as BaseBehaviour);
-        }
-
-        Ability clone = new Ability(behavioursClone, template);
-
-        return clone;
-    }
-    
-
 
 	#region Events
 	public event SubscribtableAction ChannelCanceled;
