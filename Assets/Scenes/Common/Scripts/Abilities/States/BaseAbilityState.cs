@@ -71,9 +71,7 @@ public abstract class BaseAbilityState : IState
             elapsedTime += Time.deltaTime;
             yield return 0;
         }
-        // yield return new WaitForSeconds(duration);
-
-        Debug.Log("State completed.");
+        
         stateCompleted = true;
         ability.InvokeStateCompleted();
     }

@@ -45,7 +45,13 @@ public abstract class BaseBehaviour : NetworkBehaviour
 		INTERRUPTED = 1 << 5,
         ALL = 1 << 6 - 1
 	}
-	public BaseBehaviourData Data { get; set; }
+
+	// the following to types are a hacky method to use type covariance in c# 
+	// see: https://stackoverflow.com/questions/421851/how-to-return-subtype-in-overridden-method-of-subclass-in-c
+
+	public virtual BaseBehaviourData Data { get => data; set => data = value; }
+	protected BaseBehaviourData data;
+
     protected Ability ability = null;
 
     public virtual void Initialize(Ability ability)

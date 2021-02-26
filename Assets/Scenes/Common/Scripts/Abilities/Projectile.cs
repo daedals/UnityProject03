@@ -12,11 +12,8 @@ public class Projectile : NetworkBehaviour
     private float movementSpeed;
     private float lifeTime;
 
-    public int Ticket { get; private set; }
-
-    public void Initialize(int ticket, float movementSpeed, float lifeTime)
+    public void Initialize(float movementSpeed, float lifeTime)
     {
-        Ticket = ticket;
         this.movementSpeed = movementSpeed;
         this.lifeTime = lifeTime;
 
@@ -32,6 +29,12 @@ public class Projectile : NetworkBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        initialized = false;
+        fired = false;
+    }
+
     public void Fire(Vector3 targetDirection)
     {
         if (!initialized) return;
@@ -39,11 +42,11 @@ public class Projectile : NetworkBehaviour
         fired = true;
         this.targetDirection = targetDirection;
 
-        StartCoroutine(DestroyAtEndOfLife());
+        StartCoroutine(LifeTimeCoroutine());
     }
 
     public event Action<Projectile> LifeTimeEnded;
-    private IEnumerator DestroyAtEndOfLife()
+    private IEnumerator LifeTimeCoroutine()
     {
         yield return new WaitForSeconds(lifeTime);
         LifeTimeEnded?.Invoke(this);

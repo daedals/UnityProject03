@@ -4,28 +4,25 @@ using UnityEngine;
 using Mirror;
 using System;
 
-public class LinearProjectile : BaseBehaviour, ISpawnRequester
+public class LinearProjectile : BaseBehaviour, IPrefabPool
 {
     private const string projectileSpawnTransform = "ProjectileSpawnTransform";
 
-    private List<Projectile> projectileInstances = new List<Projectile>();
-
-	public ulong Id { get; set; }
-	// public List<Tuple<int, GameObject>> SpawnedInstances 
-    // {
-    //     // TODO: change for more protection
-    //     get; 
-    //     set; 
-    // }
-
-	/*
-    // public new LinearProjectileData Data { get; protected set; }
-
-    everytime we use a derived BaseBehaviourData (such as LinearProjectileData) we have to cast to that inheriting class
-    this is because c# doe not support return type covariance (to overwrite local Data property to the derived class)
-    */
     
-	// public LinearProjectile(LinearProjectileData data) : base(data) {}
+    public override BaseBehaviourData Data { get => data; set => data = (LinearProjectileData)value; }
+	[SerializeField] protected new LinearProjectileData data;
+
+
+	public int PoolSize => data.poolSize;
+
+    // private SyncList<GameObject> pool = new SyncList<GameObject>();
+	// public SyncList<GameObject> Pool => pool;
+    private List<GameObject> pool = new List<GameObject>();
+	public List<GameObject> Pool => pool;
+
+	public GameObject Prefab => data.projectilePrefab;
+
+
 
 	/* TODO: make this an IRotationModifier and on enter add it to the players rotationinput, on tick update to mouseposition, on exit remove from RotationHandler */
 
@@ -33,7 +30,10 @@ public class LinearProjectile : BaseBehaviour, ISpawnRequester
 	{
 		base.Initialize(ability);
 
-        ability.owner.GetComponent<PlayerPrefabPool>().Add(this, ((LinearProjectileData)Data).projectilePrefab);
+        // assign client authority to be able to send commands to server (and spawn projectiles)
+        // GetComponent<NetworkIdentity>().AssignClientAuthority(ability.owner.GetComponent<NetworkIdentity>().connectionToClient);
+
+        InitializePool();
 	}
 
     public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
@@ -51,44 +51,12 @@ public class LinearProjectile : BaseBehaviour, ISpawnRequester
             return;
         }
 
-        PlayerPrefabPool pool = ability.owner.GetComponent<PlayerPrefabPool>();
+        GameObject instance = SpawnPrefab(spawn.position, spawn.rotation);
 
-        int ticket = pool.RequestPrefabSpawn(
-            this, 
-            spawn.position,
-            spawn.rotation);
+        if (instance == null) throw new Exception("No instance could be fetched from pool.");
 
-        pool.StartCoroutine(FetchInstance(ticket));
-    }
-
-    private IEnumerator FetchInstance(int ticket)
-    {
-        System.Tuple<ulong, GameObject> tuple;
-
-        while (true)
-        {
-            // TODO: put in other break condition on failure (times or counted)
-            tuple = ability.owner.GetComponent<PlayerPrefabPool>().RequestSpawnedInstance(this, ticket);
-
-            if (tuple != null) break;
-
-            Debug.Log("Could not fetch requested instance.");
-            yield return 0;
-        }
-
-        Debug.Log("Successfully fetched instance.");
-
-        System.Tuple<int, GameObject> instance = new Tuple<int, GameObject>(ticket, tuple.Item2);
-
-        // SpawnedInstances.Add(instance);
-
-        OnRequestedInstanceReceived(instance);
-    }
-
-    public void OnRequestedInstanceReceived(System.Tuple<int, GameObject> instance)
-    {
-        Projectile projectile = instance.Item2.GetComponent<Projectile>();
-        projectile.Initialize(instance.Item1, ((LinearProjectileData)Data).movementSpeed, ((LinearProjectileData)Data).lifeTime);
+        Projectile projectile = instance.GetComponent<Projectile>();
+        projectile.Initialize(data.movementSpeed, data.lifeTime);
 
         Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
 
@@ -96,10 +64,9 @@ public class LinearProjectile : BaseBehaviour, ISpawnRequester
         projectile.TargetHit += OnTargetHit;
 
         projectile.Fire( Vector3.ProjectOnPlane(
-            mousePosition - instance.Item2.transform.position,
+            mousePosition - instance.transform.position,
             Vector3.up
             ));
-        Debug.Log("Shooting bullet.");
     }
 
     private void OnTargetHit(Projectile projectile, GameObject other)
@@ -112,8 +79,70 @@ public class LinearProjectile : BaseBehaviour, ISpawnRequester
 
     private void OnLifeTimeEnded(Projectile projectile)
     {
-        RequestInstanceDespawn(projectile.Ticket);
+        UnspawnPrefab(projectile.gameObject);
     }
 
-    private void RequestInstanceDespawn(int ticket) => ability.owner.GetComponent<PlayerPrefabPool>().RequestInstanceDespawn(this, ticket);
+	public void InitializePool()
+	{
+		for (int i = 0; i < PoolSize; i++)
+        {
+            CmdSpawnPrefab();
+        }
+	}
+
+    [Command]
+    private void CmdSpawnPrefab()
+    {
+        GameObject instance = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
+        instance.SetActive(false);
+        NetworkServer.Spawn(instance, ability.owner.GetComponent<NetworkIdentity>().connectionToClient);
+
+        Pool.Add(instance);
+    }
+
+	public GameObject GetFromPool()
+	{
+        foreach(GameObject instance in Pool)
+        {
+            if (!instance.activeInHierarchy)
+            {
+                return instance;
+            }
+        }
+
+        Debug.Log("No instance of " + Prefab.name + " is currently available.");
+        return null;
+	}
+
+	public GameObject SpawnPrefab(Vector3 position, Quaternion rotation)
+	{
+        GameObject instance = GetFromPool();
+
+        if (instance == null) return null;
+
+        Debug.Log("Grabbing " + Prefab.name + " from pool.");
+
+        instance.transform.position = position;
+        instance.transform.rotation = rotation;
+
+        instance.SetActive(true);
+
+        return instance;
+	}
+
+	public void UnspawnPrefab(GameObject instance)
+	{
+        Debug.Log("Re-pooling " + instance.name);
+
+        /* TODO: unsubscribing might not be necessary, if subscription is done in CmdSpawnPrefab */
+        Projectile projectile = instance.GetComponent<Projectile>();
+
+        projectile.LifeTimeEnded -= OnLifeTimeEnded;
+        projectile.TargetHit -= OnTargetHit;
+
+        instance.SetActive(false);
+
+        instance.transform.position = Vector3.zero;
+        instance.transform.rotation = Quaternion.identity;
+	}
 }

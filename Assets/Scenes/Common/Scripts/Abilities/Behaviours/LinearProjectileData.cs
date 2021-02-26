@@ -7,11 +7,14 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Behaviour/Linear Projectile")]
 public class LinearProjectileData : BaseBehaviourData
 {
-    [SerializeField] public GameObject projectilePrefab = null;
-
     [Header("Projectile Settings")]
     [SerializeField] public float movementSpeed = 3f;
     [SerializeField] public float lifeTime = 3f;
+    
+
+    [Header("Prefab Pool Settings")]
+    [SerializeField] public GameObject projectilePrefab = null;
+    [SerializeField] public int poolSize = 3;
 
     public LinearProjectileData()
     {

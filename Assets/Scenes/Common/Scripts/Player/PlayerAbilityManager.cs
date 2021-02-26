@@ -14,13 +14,11 @@ public class PlayerAbilityManager : NetworkBehaviour
 
 	public override void OnStartAuthority()
 	{
-        Debug.Log("hi");
         enabled = true;
 
         if (!string.IsNullOrEmpty(profile.Ability1))
         {
-            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability1, gameObject);
-            abilityGameObject.transform.parent = transform;
+            GameObject abilityGameObject = AbilityDatabase.Instance.GetAbility(profile.Ability1, gameObject);
 
             ability1 = abilityGameObject.GetComponent<Ability>();
             abilityGameObject.SetActive(true);
@@ -30,8 +28,7 @@ public class PlayerAbilityManager : NetworkBehaviour
 
         if (!string.IsNullOrEmpty(profile.Ability2))
         {
-            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability2, gameObject);
-            abilityGameObject.transform.parent = transform;
+            GameObject abilityGameObject = AbilityDatabase.Instance.GetAbility(profile.Ability2, gameObject);
 
             ability2 = abilityGameObject.GetComponent<Ability>();
 
@@ -40,8 +37,7 @@ public class PlayerAbilityManager : NetworkBehaviour
 
         if (!string.IsNullOrEmpty(profile.Ability3))
         {
-            GameObject abilityGameObject = AbilityDatabase.GetAbility(profile.Ability3, gameObject);
-            abilityGameObject.transform.parent = transform;
+            GameObject abilityGameObject = AbilityDatabase.Instance.GetAbility(profile.Ability3, gameObject);
 
             ability3 = abilityGameObject.GetComponent<Ability>();
             

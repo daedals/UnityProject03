@@ -11,16 +11,6 @@ public class Ability : NetworkBehaviour
     public AbilityTemplate template;
     public GameObject owner;
 
-    /*
-    Factory method "CreateAbilityComponent" made constructor obsolete
-
-        public Ability(List<BaseBehaviour> behaviours, AbilityTemplate template)
-        {
-            this.behaviours = behaviours;
-            this.template = template;
-        }
-    */
-
     private void OnEnable()
     {
         Transform root = transform.parent;
@@ -31,6 +21,8 @@ public class Ability : NetworkBehaviour
 
         owner = root.gameObject;
         stateMachine = new StateMachine();
+
+        behaviours = new List<BaseBehaviour>(transform.GetComponentsInChildren<BaseBehaviour>());
 
         foreach (BaseBehaviour behaviour in behaviours)
         {

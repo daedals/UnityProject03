@@ -16,11 +16,13 @@ prefabs component "PlayerProfile") from the Database.
 
 public class AbilityDatabase : NetworkBehaviour
 {
-    private static Dictionary<string, GameObject> Database = new Dictionary<string, GameObject>();
+    private static Dictionary<string, AbilityTemplate> Database = new Dictionary<string, AbilityTemplate>();
     public static AbilityDatabase Instance { get; private set; }
 
     private void OnEnable()
     {
+        if (!NetworkServer.active) return;
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
@@ -34,19 +36,20 @@ public class AbilityDatabase : NetworkBehaviour
 
         foreach (AbilityTemplate template in abilities)
         {
-            Database[template.Name] = ImplementAbility(template);
+            Database[template.Name] = template; //ImplementAbility(template);
             Debug.Log("Loaded Ability: " + template.Name);
         }
     }
 
-    public static GameObject GetAbility(string abilityName, GameObject player)
+    public GameObject GetAbility(string abilityName, GameObject player)
     {
         if (Instance == null) throw new System.Exception("No instance of AbilityDatabase found, function call failed.");
 
         if (Database.ContainsKey(abilityName))
         {
-            GameObject abilityClone = Instantiate(Database[abilityName]);
-            // NetworkServer.Spawn(abilityClone, player.GetComponent<NetworkIdentity>().connectionToClient);
+            GameObject abilityClone = ImplementAbility(Database[abilityName]);
+            abilityClone.transform.parent = player.transform;
+
             return abilityClone;
         }
 
@@ -56,9 +59,7 @@ public class AbilityDatabase : NetworkBehaviour
     public GameObject ImplementAbility(AbilityTemplate template)
     {
         GameObject abilityGameObject = template.CreateAbilityObject();
-        abilityGameObject.transform.SetParent(transform);
-
-        // abilityGameObject.AddComponent<NetworkIdentity>();
+        NetworkServer.Spawn(abilityGameObject, connectionToClient);
 
         List<BaseBehaviour> behaviourInstances = new List<BaseBehaviour>();
 
@@ -66,6 +67,8 @@ public class AbilityDatabase : NetworkBehaviour
         {
             GameObject behaviourGameObject = data.CreateBehaviourObject();
             behaviourGameObject.transform.SetParent(abilityGameObject.transform);
+            
+            NetworkServer.Spawn(behaviourGameObject, connectionToClient);
         }
 
         return abilityGameObject;

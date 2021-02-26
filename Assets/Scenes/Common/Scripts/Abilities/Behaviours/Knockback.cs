@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Knockback : BaseBehaviour
 {
-	// public Knockback(KnockbackData data) : base((BaseBehaviourData)data) {}
+    public override BaseBehaviourData Data { get => data; set => data = (KnockbackData)value; }
+    [SerializeField] protected new KnockbackData data;
 
 	public override void Initialize(Ability ability)
 	{

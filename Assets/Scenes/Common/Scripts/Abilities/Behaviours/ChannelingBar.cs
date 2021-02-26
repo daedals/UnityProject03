@@ -10,8 +10,9 @@ public class ChannelingBar : BaseBehaviour
 
     private Color _fillcolor;
     private Coroutine fade;
-
-	// public ChannelingBar(ChannelingBarData data) : base(data) {}
+    
+    public override BaseBehaviourData Data { get => data; set => data = (ChannelingBarData)value; }
+    [SerializeField] protected new ChannelingBarData data;
 
 	public override void Initialize(Ability ability)
 	{
