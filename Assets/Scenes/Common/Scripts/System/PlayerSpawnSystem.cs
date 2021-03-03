@@ -21,7 +21,7 @@ public class PlayerSpawnSystem : NetworkBehaviour
 
 	public override void OnStartClient()
 	{
-        // this is not elegant
+        /* TODO: this is not elegant, move to dedicated script */
         InputHandler.BlockActionMap(ActionMapNames.Player);
 	}
 

@@ -12,10 +12,23 @@ public class Projectile : NetworkBehaviour
     private float movementSpeed;
     private float lifeTime;
 
-    public void Initialize(float movementSpeed, float lifeTime)
+    private uint ownerNetId;
+
+    public bool ownerProtection = true;
+
+    private void OnEnable()
+    {
+        if(initialized && fired) 
+        {
+            StartCoroutine(LifeTimeCoroutine());
+        }
+    }
+
+    public void Initialize(float movementSpeed, float lifeTime, uint ownerNetId)
     {
         this.movementSpeed = movementSpeed;
         this.lifeTime = lifeTime;
+        this.ownerNetId = ownerNetId;
 
         initialized = true;
     }
@@ -31,8 +44,8 @@ public class Projectile : NetworkBehaviour
 
     private void OnDisable()
     {
-        initialized = false;
         fired = false;
+        ownerProtection = true;
     }
 
     public void Fire(Vector3 targetDirection)
@@ -41,8 +54,6 @@ public class Projectile : NetworkBehaviour
 
         fired = true;
         this.targetDirection = targetDirection;
-
-        StartCoroutine(LifeTimeCoroutine());
     }
 
     public event Action<Projectile> LifeTimeEnded;
@@ -53,14 +64,19 @@ public class Projectile : NetworkBehaviour
     }
 
     public event Action<Projectile, GameObject> TargetHit;
-    private void OnTriggerEnter(Collider other)
+	private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        if (ownerProtection &&
+            (other.gameObject.tag == "Player") && 
+            (other.GetComponent<NetworkIdentity>() != null) && 
+            (other.GetComponent<NetworkIdentity>().netId == ownerNetId))
         {
-            // TODO: determine if gameObject has the right tag
-            // exclude the casting player for some time (TBD)
-
-            TargetHit?.Invoke(this, other.gameObject);
+            ownerProtection = false;
+            Debug.Log("Removed owner protection.");
+            return;
         }
+
+        TargetHit?.Invoke(this, other.gameObject);
     }
+    
 }

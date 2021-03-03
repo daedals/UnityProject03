@@ -7,7 +7,7 @@ public interface IPrefabPool
 {
     int PoolSize { get; }
     // SyncList<GameObject> Pool { get; }
-    List<GameObject> Pool { get; }
+    SyncList<uint> Pool { get; }
     GameObject Prefab { get; }
 
     void InitializePool();

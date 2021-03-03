@@ -11,22 +11,20 @@ public class Ability : NetworkBehaviour
     public AbilityTemplate template;
     public GameObject owner;
 
-    private void OnEnable()
+    public void Initialize()
     {
         Transform root = transform.parent;
-
-        if (root.GetComponent<AbilityDatabase>() != null) throw new Exception("Ability is enabled in AbilityDatabase");
 
         if (root.GetComponent<PlayerAbilityManager>() == null) throw new Exception("Abilities root object has no AbilityManager");
 
         owner = root.gameObject;
         stateMachine = new StateMachine();
 
-        behaviours = new List<BaseBehaviour>(transform.GetComponentsInChildren<BaseBehaviour>());
+        behaviours = new List<BaseBehaviour>(transform.GetComponents<BaseBehaviour>());
 
         foreach (BaseBehaviour behaviour in behaviours)
         {
-            behaviour.Initialize(this);
+            behaviour.Initialize();
         }
 
         SetupStatemachine();
@@ -114,6 +112,10 @@ public class Ability : NetworkBehaviour
 
     public event Action<GameObject, GameObject> AbilityHitTarget;
     public void SignalTargetHit(GameObject obj, GameObject other) => AbilityHitTarget?.Invoke(obj, other);
+    
+    
+    public event Action<GameObject, List<GameObject>> AbilityTargetsIdentified;
+    public void SignalTargetsIdentified(GameObject obj, List<GameObject> targets) => AbilityTargetsIdentified?.Invoke(obj, targets);
 
 	#endregion
 }

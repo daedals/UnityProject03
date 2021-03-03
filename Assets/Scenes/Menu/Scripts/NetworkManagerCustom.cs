@@ -42,25 +42,16 @@ public class NetworkManagerCustom : NetworkManager
 
 	public override void OnStartClient()
 	{
-        var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
-
-        foreach(var prefab in spawnablePrefabs)
+        if (!NetworkServer.active)
         {
-            ClientScene.RegisterPrefab(prefab);
+            var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
+
+            foreach(var prefab in spawnablePrefabs)
+            {
+                ClientScene.RegisterPrefab(prefab);
+            }
         }
 	}
-
-	// public override void OnDestroy()
-	// {
-	// 	base.OnDestroy();
-        
-    //     var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
-
-    //     foreach(var prefab in spawnablePrefabs)
-    //     {
-    //         ClientScene.UnregisterPrefab(prefab);
-    //     }
-	// }
 
 	public override void OnClientConnect(NetworkConnection conn)
 	{
@@ -180,14 +171,14 @@ public class NetworkManagerCustom : NetworkManager
 	{
         if (sceneName.StartsWith("Assets/Scenes/SampleMap"))
         {
-            GameObject abilityDatabaseInstance = Instantiate(_abilityDatabase);
-            NetworkServer.Spawn(abilityDatabaseInstance);
-
             GameObject playerSpawnSystemInstance = Instantiate(_playerSpawnSystem);
             NetworkServer.Spawn(playerSpawnSystemInstance);
 
             GameObject roundSystemInstance = Instantiate(_roundSystem);
             NetworkServer.Spawn(roundSystemInstance);
+            
+            GameObject abilityDatabaseInstance = Instantiate(_abilityDatabase);
+            NetworkServer.Spawn(abilityDatabaseInstance);
         }
 
 		base.OnServerSceneChanged(sceneName);

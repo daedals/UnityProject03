@@ -16,21 +16,20 @@ public abstract class BaseBehaviourData : ScriptableObject
 		protected set => executionMask = value;
 	}
 
-	public GameObject CreateBehaviourObject()
+	public void AddBehaviourScript(GameObject obj)
 	{
+		if (obj.GetComponent<Ability>() == null) throw new System.Exception("Could not assign behaviour to GAmeObject wihtout ability script.");
+
 		string s = this.GetType().ToString();
 		string behaviourName = s.Substring(0, s.Length - 4);
 
-		GameObject behaviourObject = new GameObject(behaviourName);
-
-		var behaviour = behaviourObject.AddComponent(System.Type.GetType(behaviourName)) as BaseBehaviour;
+		var behaviour = obj.AddComponent(System.Type.GetType(behaviourName)) as BaseBehaviour;
 		behaviour.Data = this;
-
-		return behaviourObject;
 	}
 }
 
 
+[RequireComponent(typeof(Ability))]
 public abstract class BaseBehaviour : NetworkBehaviour
 {
     [System.Flags]
@@ -52,12 +51,7 @@ public abstract class BaseBehaviour : NetworkBehaviour
 	public virtual BaseBehaviourData Data { get => data; set => data = value; }
 	protected BaseBehaviourData data;
 
-    protected Ability ability = null;
-
-    public virtual void Initialize(Ability ability)
-    {
-        this.ability = ability;
-    }
+    public virtual void Initialize() {}
 
     public virtual void Tick(BaseAbilityState.AbilityStateContext ctx) {}
     public virtual void OnEnter(BaseAbilityState.AbilityStateContext ctx) {}

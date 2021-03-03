@@ -8,7 +8,7 @@ using UnityEngine;
 public class KnockbackData : BaseBehaviourData
 {
     [Header("Knockback Settings")]
-    [SerializeField] float force = 3f;
+    [SerializeField] public float force = 3f;
     
     public KnockbackData()
     {

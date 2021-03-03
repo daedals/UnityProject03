@@ -480,7 +480,7 @@ MonoBehaviour:
   syncInterval: 0.1
   _controller: {fileID: 1744300020674181121}
   _movementHandler: {fileID: 1744300020674181132}
-  _mass: 1
+  _playerData: {fileID: 11400000, guid: a0e8d1026e5b5004885fa8c5616b99ab, type: 2}
   _drag: 5
   _wasGroundedLastFrame: 0
 --- !u!114 &1744300020674181127

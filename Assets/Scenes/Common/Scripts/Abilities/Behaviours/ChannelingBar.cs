@@ -14,11 +14,9 @@ public class ChannelingBar : BaseBehaviour
     public override BaseBehaviourData Data { get => data; set => data = (ChannelingBarData)value; }
     [SerializeField] protected new ChannelingBarData data;
 
-	public override void Initialize(Ability ability)
+	public override void Initialize()
 	{
-		base.Initialize(ability);
-        
-        Transform reference = ability.owner.transform.Find("WorldSpaceUI").transform.Find("Canvas").transform.Find("ChannelingBar");
+        Transform reference = transform.parent.transform.Find("WorldSpaceUI").transform.Find("Canvas").transform.Find("ChannelingBar");
 
         _slider = reference.GetComponent<Slider>();
         _fill = reference.Find("Fill").GetComponent<Image>();

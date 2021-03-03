@@ -14,11 +14,8 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 
 
 	public int PoolSize => data.poolSize;
-
-    // private SyncList<GameObject> pool = new SyncList<GameObject>();
-	// public SyncList<GameObject> Pool => pool;
-    private List<GameObject> pool = new List<GameObject>();
-	public List<GameObject> Pool => pool;
+    private SyncList<uint> pool = new SyncList<uint>();
+	public SyncList<uint> Pool => pool;
 
 	public GameObject Prefab => data.projectilePrefab;
 
@@ -26,14 +23,9 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 
 	/* TODO: make this an IRotationModifier and on enter add it to the players rotationinput, on tick update to mouseposition, on exit remove from RotationHandler */
 
-	public override void Initialize(Ability ability)
+	public override void Initialize()
 	{
-		base.Initialize(ability);
-
-        // assign client authority to be able to send commands to server (and spawn projectiles)
-        // GetComponent<NetworkIdentity>().AssignClientAuthority(ability.owner.GetComponent<NetworkIdentity>().connectionToClient);
-
-        InitializePool();
+        if (hasAuthority) InitializePool();
 	}
 
     public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
@@ -43,7 +35,7 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 
     private void OnStateCompleted()
     {
-        Transform spawn = ability.owner.transform.Find(projectileSpawnTransform);
+        Transform spawn = transform.parent.transform.Find(projectileSpawnTransform);
 
         if (spawn == null)
         {
@@ -56,30 +48,20 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
         if (instance == null) throw new Exception("No instance could be fetched from pool.");
 
         Projectile projectile = instance.GetComponent<Projectile>();
-        projectile.Initialize(data.movementSpeed, data.lifeTime);
 
         Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
 
         projectile.LifeTimeEnded += OnLifeTimeEnded;
         projectile.TargetHit += OnTargetHit;
 
+        /* TODO: this currently works, but if it breaks in future it might be because the projectile gets enabled over a clientrpc
+                 and only then fired. in the onenable method of the projectile the lifetime coroutine is started if it is fired
+                 and it is only fired because the delay of the clientrps call */
+
         projectile.Fire( Vector3.ProjectOnPlane(
             mousePosition - instance.transform.position,
             Vector3.up
             ));
-    }
-
-    private void OnTargetHit(Projectile projectile, GameObject other)
-    {
-        // TODO: explode projectile
-        ability.SignalTargetHit(projectile.gameObject, other);
-
-        // RequestInstanceDespawn(projectile.Ticket);
-    }
-
-    private void OnLifeTimeEnded(Projectile projectile)
-    {
-        UnspawnPrefab(projectile.gameObject);
     }
 
 	public void InitializePool()
@@ -90,20 +72,33 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
         }
 	}
 
-    [Command]
+    [Command(ignoreAuthority = true)]
     private void CmdSpawnPrefab()
     {
         GameObject instance = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
-        instance.SetActive(false);
-        NetworkServer.Spawn(instance, ability.owner.GetComponent<NetworkIdentity>().connectionToClient);
 
-        Pool.Add(instance);
+        NetworkServer.Spawn(instance, transform.parent.GetComponent<NetworkIdentity>().connectionToClient);
+
+        uint netId = instance.GetComponent<NetworkIdentity>().netId;
+
+        RpcSetInstanceActive(netId, false);
+        RpcInitializeInstance(netId);
+
+        Pool.Add(netId);
+    }
+
+    [ClientRpc]
+    private void RpcInitializeInstance(uint netId)
+    {
+        NetworkIdentity.spawned[netId].GetComponent<Projectile>().Initialize(data.movementSpeed, data.lifeTime, transform.parent.GetComponent<NetworkIdentity>().netId);
     }
 
 	public GameObject GetFromPool()
 	{
-        foreach(GameObject instance in Pool)
+        foreach(uint netId in Pool)
         {
+            GameObject instance = NetworkIdentity.spawned[netId].gameObject;
+
             if (!instance.activeInHierarchy)
             {
                 return instance;
@@ -125,10 +120,16 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
         instance.transform.position = position;
         instance.transform.rotation = rotation;
 
-        instance.SetActive(true);
+        CmdSetInstanceActive(instance.GetComponent<NetworkIdentity>().netId, true);
 
         return instance;
 	}
+
+	[Command]
+	private void CmdSetInstanceActive(uint netId, bool active) => RpcSetInstanceActive(netId, active);
+
+    [ClientRpc]
+    private void RpcSetInstanceActive(uint netId, bool active) => NetworkIdentity.spawned[netId].gameObject.SetActive(active);
 
 	public void UnspawnPrefab(GameObject instance)
 	{
@@ -140,9 +141,22 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
         projectile.LifeTimeEnded -= OnLifeTimeEnded;
         projectile.TargetHit -= OnTargetHit;
 
-        instance.SetActive(false);
+        CmdSetInstanceActive(instance.GetComponent<NetworkIdentity>().netId, false);
 
         instance.transform.position = Vector3.zero;
         instance.transform.rotation = Quaternion.identity;
 	}
+    
+    private void OnTargetHit(Projectile projectile, GameObject other)
+    {
+        GetComponent<Ability>().SignalTargetHit(projectile.gameObject, other);
+
+        UnspawnPrefab(projectile.gameObject);
+    }
+
+    private void OnLifeTimeEnded(Projectile projectile)
+    {
+        UnspawnPrefab(projectile.gameObject);
+    }
+
 }

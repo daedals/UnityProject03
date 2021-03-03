@@ -23,12 +23,17 @@ public class AbilityTemplate : ScriptableObject
 
 	public GameObject CreateAbilityObject()
 	{
-		GameObject abilityObject = new GameObject(Name);
-        abilityObject.SetActive(false);
+		GameObject obj = new GameObject(Name);
+		Ability ability = obj.AddComponent<Ability>();
 
-		var ability = abilityObject.AddComponent<Ability>();
 		ability.template = this;
 
-		return abilityObject;
+		foreach (BaseBehaviourData behaviour in behaviours)
+		{
+			behaviour.AddBehaviourScript(obj);
+		}
+
+		return obj;
 	}
+
 }
