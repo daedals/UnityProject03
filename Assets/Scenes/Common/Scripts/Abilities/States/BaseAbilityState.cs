@@ -16,12 +16,14 @@ public abstract class BaseAbilityState : IState
 
     public struct AbilityStateContext
     {
-        public AbilityStateContext(bool stateCompleted, float duration, float elapsedTime)
+        public AbilityStateContext(IState state, bool stateCompleted, float duration, float elapsedTime)
         {
+            this.state = state;
             this.stateCompleted = stateCompleted;
             this.duration = duration;
             this.elapsedTime = elapsedTime;
         }
+        public IState state;
         public bool stateCompleted;
         public float duration;
         public float elapsedTime;
@@ -46,7 +48,7 @@ public abstract class BaseAbilityState : IState
     {
         foreach (BaseBehaviour behaviour in behaviours)
         {
-            behaviour.Tick(new AbilityStateContext(stateCompleted, duration, elapsedTime));
+            behaviour.Tick(new AbilityStateContext(this, stateCompleted, duration, elapsedTime));
         }
     }
 
@@ -57,7 +59,7 @@ public abstract class BaseAbilityState : IState
 
         foreach (BaseBehaviour behaviour in behaviours)
         {
-            behaviour.OnEnter(new AbilityStateContext(stateCompleted, duration, elapsedTime));
+            behaviour.OnEnter(new AbilityStateContext(this, stateCompleted, duration, elapsedTime));
         }
 
         Debug.Log("Entering " + this.GetType().ToString() + " (" + duration + "s duration)");
@@ -80,7 +82,7 @@ public abstract class BaseAbilityState : IState
     {
         foreach (BaseBehaviour behaviour in behaviours)
         {
-            behaviour.OnExit(new AbilityStateContext(stateCompleted, duration, elapsedTime));
+            behaviour.OnExit(new AbilityStateContext(this, stateCompleted, duration, elapsedTime));
         }
 
         Debug.Log(this.GetType().ToString() + (stateCompleted ? " completed." : " canceled after " + elapsedTime));

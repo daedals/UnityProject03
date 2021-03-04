@@ -13,57 +13,13 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 	[SerializeField] protected new LinearProjectileData data;
 
 
+#region IPrefabPool
+
 	public int PoolSize => data.poolSize;
     private SyncList<uint> pool = new SyncList<uint>();
 	public SyncList<uint> Pool => pool;
-
 	public GameObject Prefab => data.projectilePrefab;
-
-
-
-	/* TODO: make this an IRotationModifier and on enter add it to the players rotationinput, on tick update to mouseposition, on exit remove from RotationHandler */
-
-	public override void Initialize()
-	{
-        if (hasAuthority) InitializePool();
-	}
-
-    public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
-    {
-        if (ctx.stateCompleted) OnStateCompleted();
-    }
-
-    private void OnStateCompleted()
-    {
-        Transform spawn = transform.parent.transform.Find(projectileSpawnTransform);
-
-        if (spawn == null)
-        {
-            Debug.Log("No spawning Position could be located for a projectile.");
-            return;
-        }
-
-        GameObject instance = SpawnPrefab(spawn.position, spawn.rotation);
-
-        if (instance == null) throw new Exception("No instance could be fetched from pool.");
-
-        Projectile projectile = instance.GetComponent<Projectile>();
-
-        Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
-
-        projectile.LifeTimeEnded += OnLifeTimeEnded;
-        projectile.TargetHit += OnTargetHit;
-
-        /* TODO: this currently works, but if it breaks in future it might be because the projectile gets enabled over a clientrpc
-                 and only then fired. in the onenable method of the projectile the lifetime coroutine is started if it is fired
-                 and it is only fired because the delay of the clientrps call */
-
-        projectile.Fire( Vector3.ProjectOnPlane(
-            mousePosition - instance.transform.position,
-            Vector3.up
-            ));
-    }
-
+    
 	public void InitializePool()
 	{
 		for (int i = 0; i < PoolSize; i++)
@@ -146,6 +102,49 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
         instance.transform.position = Vector3.zero;
         instance.transform.rotation = Quaternion.identity;
 	}
+
+#endregion
+
+	public override void Initialize()
+	{
+        if (hasAuthority) InitializePool();
+	}
+
+    public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
+    {
+        if (ctx.stateCompleted) OnStateCompleted();
+    }
+
+    private void OnStateCompleted()
+    {
+        Transform spawn = transform.parent.transform.Find(projectileSpawnTransform);
+
+        if (spawn == null)
+        {
+            Debug.Log("No spawning Position could be located for a projectile.");
+            return;
+        }
+
+        GameObject instance = SpawnPrefab(spawn.position, spawn.rotation);
+
+        if (instance == null) throw new Exception("No instance could be fetched from pool.");
+
+        Projectile projectile = instance.GetComponent<Projectile>();
+
+        Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
+
+        projectile.LifeTimeEnded += OnLifeTimeEnded;
+        projectile.TargetHit += OnTargetHit;
+
+        /* TODO: this currently works, but if it breaks in future it might be because the projectile gets enabled over a clientrpc
+                 and only then fired. in the onenable method of the projectile the lifetime coroutine is started if it is fired
+                 and it is only fired because the delay of the clientrps call */
+
+        projectile.Fire( Vector3.ProjectOnPlane(
+            mousePosition - instance.transform.position,
+            Vector3.up
+            ));
+    }
     
     private void OnTargetHit(Projectile projectile, GameObject other)
     {
