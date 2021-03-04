@@ -7,6 +7,8 @@ public class MovementHandler : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private CharacterController _controller = null;
+    [Header("Debug")]
+    [SerializeField] private float _movementSpeed;
 
     private readonly List<IMovementModifier> _modifiers = new List<IMovementModifier>();
 
@@ -34,6 +36,7 @@ public class MovementHandler : NetworkBehaviour
             movement += modifier.MMValue;
         }
 
+        _movementSpeed = (new Vector2(movement.x, movement.z)).magnitude;
         _controller.Move(movement * Time.deltaTime);
     }
 }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dc527fdf9cdcc3499d4e6c6e41e1410, type: 3}
+  m_Name: TestAbility
+  m_EditorClassIdentifier: 
+  Name: TestAbility
+  Description: this is just a test
+  Icon: {fileID: 21300000, guid: 325d33c6d266f0e448f60efb34dde7b1, type: 3}
+  channelDuration: 1
+  castDuration: 1
+  cooldownDuration: 1
+  interruptionDuration: 0.2
+  behaviours:
+  - {fileID: 11400000, guid: aa84ab7aa4af58b4d9be889ed27a2c22, type: 2}
+  - {fileID: 11400000, guid: eab2faaa5b8e6454db6f4bc131a21b8d, type: 2}
+  - {fileID: 11400000, guid: e28374aec39ff2243a192534fc7f0bed, type: 2}
+  - {fileID: 11400000, guid: 0ee9c36def806ff468d2e4806b784c34, type: 2}

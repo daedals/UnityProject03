@@ -8,6 +8,7 @@ public class MovementInputProcessor : NetworkBehaviour, IMovementModifier
     [Header("References")]
     [SerializeField] private MovementHandler _movementHandler = null;
     [SerializeField] private EntityDataContainer _playerData = null;
+    [SerializeField] private MovementSpeedHandler _movementSpeedHandler = null;
     [SerializeField] private CharacterController _controller = null;
 
     [Header("Debug")]
@@ -44,7 +45,7 @@ public class MovementInputProcessor : NetworkBehaviour, IMovementModifier
     [Client]
     private void Move()
     {
-        float targetSpeed = _playerData.movementSpeed * _previousInputDirection.magnitude;
+        float targetSpeed = _movementSpeedHandler.MovementSpeed * _previousInputDirection.magnitude;
         _currentSpeed = Mathf.MoveTowards(_currentSpeed, targetSpeed, _playerData.acceleration * Time.deltaTime);
 
         Vector3 movementDirection;

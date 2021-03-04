@@ -4244,10 +4244,10 @@ RectTransform:
   m_Father: {fileID: 32917510}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -80.84491, y: 26}
-  m_SizeDelta: {x: 993.9954, y: 117.5255}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -22.5, y: 40}
+  m_SizeDelta: {x: -85, y: -420}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1539110185
 MonoBehaviour:
@@ -5886,7 +5886,7 @@ MonoBehaviour:
   runInBackground: 1
   autoStartServerBuild: 1
   showDebugMessages: 0
-  serverTickRate: 30
+  serverTickRate: 60
   offlineScene: 
   onlineScene: Assets/Scenes/Menu.unity
   transport: {fileID: 1985367594}
@@ -5911,6 +5911,8 @@ MonoBehaviour:
   _playerSpawnSystem: {fileID: 8601551054339978304, guid: cd3d9c67532b19e47bdf49c6d13730a0,
     type: 3}
   _roundSystem: {fileID: 5208549738672871083, guid: ae5b663b98d15a34ab6228c977da95e2,
+    type: 3}
+  _abilityDatabase: {fileID: 8464272563834245240, guid: 4797cdbc555b56a419ef75a2c870d709,
     type: 3}
 --- !u!4 &1985367596
 Transform:
@@ -6096,10 +6098,10 @@ RectTransform:
   m_Father: {fileID: 32917510}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -80.84491, y: 165.3934}
-  m_SizeDelta: {x: 993.9954, y: 117.5255}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -22.500004, y: 160}
+  m_SizeDelta: {x: -84.99999, y: -420}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2015411569
 MonoBehaviour:
@@ -6294,10 +6296,10 @@ RectTransform:
   m_Father: {fileID: 32917510}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -80.84491, y: -111}
-  m_SizeDelta: {x: 993.9954, y: 117.5255}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -22.5, y: -80}
+  m_SizeDelta: {x: -85, y: -420}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2091813231
 MonoBehaviour:

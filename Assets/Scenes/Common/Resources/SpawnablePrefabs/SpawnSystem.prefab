@@ -64,5 +64,5 @@ MonoBehaviour:
   syncInterval: 0.1
   _playerPrefab: {fileID: 1744300020674181134, guid: 3e1d3ee7f8aae0f47a4e27c140d5f0af,
     type: 3}
-  _playerCameraPrefab: {fileID: 6239965326193611385, guid: 74857f50b739f4043b56eeffe4e72d9a,
+  _serverProjectileHandler: {fileID: 1476389393528160825, guid: bfdbda6d68650d1429c86f7edc7dbef8,
     type: 3}

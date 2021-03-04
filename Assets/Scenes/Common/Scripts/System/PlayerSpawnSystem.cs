@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
+using System;
 
 public class PlayerSpawnSystem : NetworkBehaviour
 {
     [SerializeField] private GameObject _playerPrefab = null;
+
     private static List<Transform> _spawnPoints = new List<Transform>();
     private int _nextIndex = 0;
 
@@ -19,7 +21,7 @@ public class PlayerSpawnSystem : NetworkBehaviour
 
 	public override void OnStartClient()
 	{
-        // this is not elegant
+        /* TODO: this is not elegant, move to dedicated script */
         InputHandler.BlockActionMap(ActionMapNames.Player);
 	}
 
@@ -43,6 +45,7 @@ public class PlayerSpawnSystem : NetworkBehaviour
         }
 
         GameObject playerInstance = Instantiate(_playerPrefab, _spawnPoints[_nextIndex].position, _spawnPoints[_nextIndex].rotation);
+
         NetworkServer.Spawn(playerInstance, conn);
 
         _nextIndex++;

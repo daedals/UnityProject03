@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
-using Mirror;
 using UnityEngine;
+using Mirror;
 
 public class ForceReceiver : NetworkBehaviour, IMovementModifier
 {
     [Header("References")]
     [SerializeField] private CharacterController _controller = null;
     [SerializeField] private MovementHandler _movementHandler = null;
+    [SerializeField] private EntityDataContainer _playerData = null;
 
     [Header("Settings")]
-    [SerializeField] private float _mass = 1f;
     [SerializeField] private float _drag = 5f;
 
     [Header("Debug")]
@@ -21,16 +21,15 @@ public class ForceReceiver : NetworkBehaviour, IMovementModifier
         enabled = true;
 	}
 
-
     [ClientCallback]
     private void OnEnable() => _movementHandler.AddModifier(this);
+
     [ClientCallback]
     private void OnDisable() => _movementHandler.RemoveModifier(this);
 
-
     public Vector3 MMValue { get; private set; }
 
-    [ClientCallback]
+    [Client]
     private void Update() 
     {
         if(!_wasGroundedLastFrame && _controller.isGrounded)
@@ -49,5 +48,5 @@ public class ForceReceiver : NetworkBehaviour, IMovementModifier
     }
 
     [Client]
-    public void AddForce(Vector3 force) => MMValue += force / _mass;
+    public void AddForce(Vector3 force) => MMValue += force / _playerData.mass;
 }

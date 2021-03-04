@@ -20,8 +20,11 @@ public class NetworkManagerCustom : NetworkManager
 
     [Header("Game")]
     [SerializeField] private NetworkGamePlayerLobby _gamePlayerPrefab = null;
+
+    // all systems
     [SerializeField] private GameObject _playerSpawnSystem = null;
     [SerializeField] private GameObject _roundSystem = null;
+    [SerializeField] private GameObject _abilityDatabase = null;
 
     private MapHandler _mapHandler;
 
@@ -39,13 +42,14 @@ public class NetworkManagerCustom : NetworkManager
 
 	public override void OnStartClient()
 	{
-        var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
-
-        ClientScene.ClearSpawners();
-
-        foreach(var prefab in spawnablePrefabs)
+        if (!NetworkServer.active)
         {
-            ClientScene.RegisterPrefab(prefab);
+            var spawnablePrefabs = Resources.LoadAll<GameObject>("SpawnablePrefabs");
+
+            foreach(var prefab in spawnablePrefabs)
+            {
+                ClientScene.RegisterPrefab(prefab);
+            }
         }
 	}
 
@@ -172,6 +176,9 @@ public class NetworkManagerCustom : NetworkManager
 
             GameObject roundSystemInstance = Instantiate(_roundSystem);
             NetworkServer.Spawn(roundSystemInstance);
+            
+            GameObject abilityDatabaseInstance = Instantiate(_abilityDatabase);
+            NetworkServer.Spawn(abilityDatabaseInstance);
         }
 
 		base.OnServerSceneChanged(sceneName);

@@ -9,10 +9,13 @@ public class EntityDataContainer : ScriptableObject
     [SerializeField] public float rotationSpeed;
 
     [Header("Movement Attributes")]
-    [SerializeField]public float movementSpeed;
-    [SerializeField]public float acceleration;
+    [SerializeField] public float movementSpeed;
+    [SerializeField] public float acceleration;
 
     [Header("Health Attributes")]
-    [SerializeField]public float MaximumHealth;
-    [SerializeField]public float CurrentHealth;
+    [SerializeField] public float MaximumHealth;
+    [SerializeField] public float CurrentHealth;
+
+    [Header("Other")]
+    [SerializeField] public float mass;
 }
