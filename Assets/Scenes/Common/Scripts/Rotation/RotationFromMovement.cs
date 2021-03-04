@@ -11,19 +11,14 @@ public class RotationFromMovement : NetworkBehaviour, IRotationModifier
     [SerializeField] private RotationHandler _rotationHandler = null;
 
     [Header("Debug")]
-    [SerializeField] private float _magnitude = 0f;
     [SerializeField] private bool _active = false;
     [SerializeField] private bool _isGrounded = false;
-
-    private Vector3 _previousInputDirection;
-    private Quaternion _previousRotation;
 
 
     [ClientCallback]
     private void OnEnable()
     {
         RMPriority = 0;
-        _previousRotation = transform.rotation;
     }
 
     [ClientCallback]
@@ -38,32 +33,7 @@ public class RotationFromMovement : NetworkBehaviour, IRotationModifier
 	public override void OnStartAuthority()
 	{
         enabled = true;
-
-        // change this subscription, rotation should only happen 
-        PlayerInputHandler.OnMovement += SetMovementInput;
 	}
-
-	
-
-    [Client]
-    public void SetMovementInput(Vector2 inputDirection)
-    {
-        _previousInputDirection = new Vector3(inputDirection.x, 0f, inputDirection.y);
-
-        _magnitude = _previousInputDirection.magnitude;
-        _isGrounded = _controller.isGrounded;
-
-        if(_active && (_previousInputDirection.magnitude < .2f || !_controller.isGrounded))
-        {
-            _active = false;
-            _rotationHandler.RemoveModifier(this);
-        }
-        else
-        {
-            _active = true;
-            _rotationHandler.AddModifier(this);
-        }
-    }
 
     [ClientCallback]
     private void Update() => Rotate();
@@ -71,12 +41,23 @@ public class RotationFromMovement : NetworkBehaviour, IRotationModifier
     [Client]
     private void Rotate()
     {
+        Vector3 movementDirection = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z);
+        _isGrounded = _controller.isGrounded;
+
+        if (_active && (movementDirection.magnitude < .2f || !_isGrounded))
+        {
+            _active = false;
+            _rotationHandler.RemoveModifier(this);
+        }
+        if (!_active && _isGrounded && movementDirection.magnitude >= .2f)
+        {
+            _active = true;
+            _rotationHandler.AddModifier(this);
+        }
+
         if (_active)
         {
-            Quaternion targetRotation;
-            targetRotation = Quaternion.Euler(0f, Vector3.SignedAngle(Vector3.forward, _previousInputDirection, Vector3.up), 0f);
-
-            RMValue = targetRotation;
+            RMValue = Quaternion.Euler(0f, Vector3.SignedAngle(Vector3.forward, movementDirection, Vector3.up), 0f);
         }
     }
 }
