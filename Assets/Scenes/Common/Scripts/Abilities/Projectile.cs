@@ -53,7 +53,7 @@ public class Projectile : NetworkBehaviour
         if (!initialized) return;
 
         fired = true;
-        this.targetDirection = targetDirection;
+        this.targetDirection = targetDirection.normalized;
     }
 
     public event Action<Projectile> LifeTimeEnded;
