@@ -16,10 +16,7 @@ public class DebugUIHandler : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Test Message 1");
-        Debug.Log("Test Message 2");
-        Debug.Log("Test Message 3");
-        Debug.Log("Test Message 4");
+        Debug.Log("Debug.Log UI is active.");
     }
 
     private void Awake()
