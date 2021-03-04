@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e9af6e7db58e744f8ce04bf39a1b483, type: 3}
   m_Name: New Linear Projectile Data
   m_EditorClassIdentifier: 
-  movementSpeed: 3
-  lifeTime: 3
+  movementSpeed: 7
+  lifeTime: 5
   projectilePrefab: {fileID: 2008296021918469929, guid: ee47a7040b0726f44b8fb4c68c49408a,
     type: 3}
   poolSize: 3

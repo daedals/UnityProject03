@@ -48,6 +48,14 @@ public class PlayerSpawnSystem : NetworkBehaviour
 
         NetworkServer.Spawn(playerInstance, conn);
 
+        playerInstance.GetComponent<HealthHandler>().PlayerDeath += OnPlayerDeath;
+
         _nextIndex++;
+    }
+
+    private void OnPlayerDeath(uint netId)
+    {
+        GameObject playerInstance = NetworkIdentity.spawned[netId].gameObject;
+        NetworkServer.UnSpawn(playerInstance);
     }
 }

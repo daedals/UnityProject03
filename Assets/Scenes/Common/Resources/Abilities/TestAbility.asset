@@ -15,9 +15,9 @@ MonoBehaviour:
   Name: TestAbility
   Description: this is just a test
   Icon: {fileID: 21300000, guid: 325d33c6d266f0e448f60efb34dde7b1, type: 3}
-  channelDuration: 1
-  castDuration: 1
-  cooldownDuration: 1
+  channelDuration: 0.5
+  castDuration: 0.5
+  cooldownDuration: 0.5
   interruptionDuration: 0.2
   behaviours:
   - {fileID: 11400000, guid: aa84ab7aa4af58b4d9be889ed27a2c22, type: 2}

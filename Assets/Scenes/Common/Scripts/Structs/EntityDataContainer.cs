@@ -18,4 +18,5 @@ public class EntityDataContainer : ScriptableObject
 
     [Header("Other")]
     [SerializeField] public float mass;
+    [SerializeField] public float drag;
 }

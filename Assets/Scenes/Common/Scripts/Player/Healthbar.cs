@@ -15,7 +15,7 @@ public class Healthbar : NetworkBehaviour
     private void OnEnable()
     {
         _healthHandler.EventHealthChanged += RpcHandleHealthChanged;
-        _healthHandler.EventPlayerDeath += RpcHandlePlayerDeath;
+        _healthHandler.PlayerDeath += RpcHandlePlayerDeath;
 
         UpdateGradient();
     }
@@ -23,7 +23,7 @@ public class Healthbar : NetworkBehaviour
     private void OnDisable()
     {
         _healthHandler.EventHealthChanged -= RpcHandleHealthChanged;
-        _healthHandler.EventPlayerDeath -= RpcHandlePlayerDeath;
+        _healthHandler.PlayerDeath -= RpcHandlePlayerDeath;
     }
 
     public void Add(GameObject healthbar)
@@ -49,7 +49,7 @@ public class Healthbar : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcHandlePlayerDeath()
+    private void RpcHandlePlayerDeath(uint netId)
     {
         // disable it i guesss
     }

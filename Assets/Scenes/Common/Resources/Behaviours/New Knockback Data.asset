@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a6de32a41c93c4db53bae4672bc067, type: 3}
   m_Name: New Knockback Data
   m_EditorClassIdentifier: 
-  force: 75
+  force: 50

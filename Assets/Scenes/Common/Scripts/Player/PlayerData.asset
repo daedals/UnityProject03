@@ -17,4 +17,5 @@ MonoBehaviour:
   acceleration: 40
   MaximumHealth: 100
   CurrentHealth: 100
-  mass: 60
+  mass: 1
+  drag: 5

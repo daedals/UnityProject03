@@ -12,9 +12,9 @@ public class MovementInputProcessor : NetworkBehaviour, IMovementModifier
     [SerializeField] private CharacterController _controller = null;
 
     [Header("Debug")]
-    [SerializeField] private float _currentSpeed;
+    [SerializeField] private float _currentSpeed = 0f;
 
-    private Vector3 _previousVelocity;
+    private Vector3 _previousVelocity = Vector3.zero;
     private Vector2 _previousInputDirection;
     
 
@@ -36,16 +36,15 @@ public class MovementInputProcessor : NetworkBehaviour, IMovementModifier
         PlayerInputHandler.OnMovement += SetMovementInput;
     }
 
-    [Client]
-    public void SetMovementInput(Vector2 inputDirection)
-    {
-        _previousInputDirection = inputDirection;
-    }
+	[Client]
+	public void SetMovementInput(Vector2 inputDirection) => _previousInputDirection = inputDirection;
 
-    [Client]
+	[Client]
     private void Move()
     {
+        // magnitude is always 1 except without any input, then its 0
         float targetSpeed = _movementSpeedHandler.MovementSpeed * _previousInputDirection.magnitude;
+
         _currentSpeed = Mathf.MoveTowards(_currentSpeed, targetSpeed, _playerData.acceleration * Time.deltaTime);
 
         Vector3 movementDirection;
@@ -65,7 +64,8 @@ public class MovementInputProcessor : NetworkBehaviour, IMovementModifier
 
         }
 
-        _previousVelocity = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z);
-        _currentSpeed = _previousVelocity.magnitude;
+        // _previousVelocity = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z);
+        _previousVelocity = MMValue;
+        // _currentSpeed = _previousVelocity.magnitude;
     }
 }

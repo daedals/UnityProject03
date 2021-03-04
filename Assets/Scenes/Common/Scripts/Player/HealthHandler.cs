@@ -24,8 +24,8 @@ public class HealthHandler : NetworkBehaviour
         }
     }
 
-    public delegate void PlayerDeathDelegate();
-    public event PlayerDeathDelegate EventPlayerDeath;
+    public delegate void PlayerDeathDelegate(uint netID);
+    public event PlayerDeathDelegate PlayerDeath;
 
     public delegate void HealthChangedDelegate(float currentHealth, float maximumHealth);
     public event HealthChangedDelegate EventHealthChanged;
@@ -40,8 +40,7 @@ public class HealthHandler : NetworkBehaviour
 
         if (CurrentHealth <= 0f)
         {
-            EventPlayerDeath?.Invoke();
-            Debug.Log("Player died.");
+            PlayerDeath?.Invoke(GetComponent<NetworkIdentity>().netId);
         }
     }
 

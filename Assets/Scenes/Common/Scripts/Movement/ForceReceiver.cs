@@ -10,9 +10,6 @@ public class ForceReceiver : NetworkBehaviour, IMovementModifier
     [SerializeField] private MovementHandler _movementHandler = null;
     [SerializeField] private EntityDataContainer _playerData = null;
 
-    [Header("Settings")]
-    [SerializeField] private float _drag = 5f;
-
     [Header("Debug")]
     [SerializeField] private bool _wasGroundedLastFrame;
 
@@ -44,9 +41,15 @@ public class ForceReceiver : NetworkBehaviour, IMovementModifier
             MMValue = Vector3.zero;
         }
 
-        MMValue = Vector3.Lerp(MMValue, Vector3.zero, _drag * Time.deltaTime);
+        MMValue = Vector3.Lerp(MMValue, Vector3.zero, _playerData.drag * Time.deltaTime);
     }
 
     [Client]
-    public void AddForce(Vector3 force) => MMValue += force / _playerData.mass;
+    // public void AddForce(Vector3 force) => MMValue += force / _playerData.mass;
+    
+    public void AddForce(Vector3 force)
+    {
+        Debug.Log($"Added force vector {force} to {gameObject.name} with mass of {_playerData.mass}.");
+        MMValue += force / _playerData.mass;
+    }
 }
