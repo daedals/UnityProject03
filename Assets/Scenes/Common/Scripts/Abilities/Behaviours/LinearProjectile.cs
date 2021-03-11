@@ -10,7 +10,12 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 
     
     public override BaseBehaviourData Data { get => data; set => data = (LinearProjectileData)value; }
-	[SerializeField] protected new LinearProjectileData data;
+	[SerializeField] private LinearProjectileData data;
+
+	public override void Initialize()
+	{
+        if (hasAuthority) InitializePool();
+	}
 
 
 #region IPrefabPool
@@ -28,7 +33,7 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
         }
 	}
 
-    [Command(ignoreAuthority = true)]
+    [Command(requiresAuthority = false)]
     private void CmdSpawnPrefab()
     {
         GameObject instance = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
@@ -37,16 +42,25 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 
         uint netId = instance.GetComponent<NetworkIdentity>().netId;
 
+        SetInstanceActive(netId, false);
         RpcSetInstanceActive(netId, false);
-        RpcInitializeInstance(netId);
+
+        InitializeInstance(netId, transform.parent.GetComponent<NetworkIdentity>().netId);
+        RpcInitializeInstance(netId, transform.parent.GetComponent<NetworkIdentity>().netId);
 
         Pool.Add(netId);
     }
 
     [ClientRpc]
-    private void RpcInitializeInstance(uint netId)
+    private void RpcInitializeInstance(uint netId, uint playerNetId) => InitializeInstance(netId, playerNetId);
+
+    private void InitializeInstance(uint netId, uint playerNetId)
     {
-        NetworkIdentity.spawned[netId].GetComponent<Projectile>().Initialize(data.movementSpeed, data.lifeTime, transform.parent.GetComponent<NetworkIdentity>().netId);
+        if (NetworkIdentity.spawned.TryGetValue(netId, out NetworkIdentity projectile))
+        {
+            projectile.GetComponent<Projectile>().Initialize(data.movementSpeed, data.lifeTime, playerNetId);
+        }
+        else throw new Exception("Projectile has not spawned yet.");
     }
 
 	public GameObject GetFromPool()
@@ -73,19 +87,53 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 
         Debug.Log("Grabbing " + Prefab.name + " from pool.");
 
-        instance.transform.position = position;
-        instance.transform.rotation = rotation;
+        uint netId = instance.GetComponent<NetworkIdentity>().netId;
 
-        CmdSetInstanceActive(instance.GetComponent<NetworkIdentity>().netId, true);
+        CmdSetProjectileTransform(netId, position, rotation);
+        CmdSetInstanceActive(netId, true);
 
         return instance;
 	}
 
+    [Command]
+    private void CmdSetProjectileTransform(uint netId, Vector3 position, Quaternion rotation)
+    {
+        SetProjectileTransform(netId, position, rotation);
+        RpcSetProjectileTransform(netId, position, rotation);
+    }
+    
+    [ClientRpc]
+    private void RpcSetProjectileTransform(uint netId, Vector3 position, Quaternion rotation) => SetProjectileTransform(netId, position, rotation);
+
+    private void SetProjectileTransform(uint netId, Vector3 position, Quaternion rotation)
+    {
+        if (NetworkIdentity.spawned.TryGetValue(netId, out NetworkIdentity projectile))
+        {
+            projectile.gameObject.transform.position = position;
+            projectile.gameObject.transform.rotation = rotation;
+        }
+        else throw new Exception("Projectile has not spawned yet.");
+    }
+
+
 	[Command]
-	private void CmdSetInstanceActive(uint netId, bool active) => RpcSetInstanceActive(netId, active);
+	private void CmdSetInstanceActive(uint netId, bool active)
+    {
+        SetInstanceActive(netId, active);
+        RpcSetInstanceActive(netId, active);
+    }
 
     [ClientRpc]
-    private void RpcSetInstanceActive(uint netId, bool active) => NetworkIdentity.spawned[netId].gameObject.SetActive(active);
+    private void RpcSetInstanceActive(uint netId, bool active) => SetInstanceActive(netId, active);
+
+    private void SetInstanceActive(uint netId, bool active)
+    {
+        if (NetworkIdentity.spawned.TryGetValue(netId, out NetworkIdentity projectile))
+        {
+            projectile.gameObject.SetActive(active);
+        }
+        else throw new Exception("Projectile has not spawned yet.");
+    }
 
 	public void UnspawnPrefab(GameObject instance)
 	{
@@ -105,11 +153,6 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 
 #endregion
 
-	public override void Initialize()
-	{
-        if (hasAuthority) InitializePool();
-	}
-
     public override void OnExit(BaseAbilityState.AbilityStateContext ctx)
     {
         if (ctx.stateCompleted) OnStateCompleted();
@@ -127,7 +170,7 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 
         GameObject instance = SpawnPrefab(spawn.position, spawn.rotation);
 
-        if (instance == null) throw new Exception("No instance could be fetched from pool.");
+        if (instance == null) return;
 
         Projectile projectile = instance.GetComponent<Projectile>();
 

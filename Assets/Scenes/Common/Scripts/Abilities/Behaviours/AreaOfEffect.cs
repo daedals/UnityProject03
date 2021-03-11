@@ -6,7 +6,7 @@ using System.Linq;
 public class AreaOfEffect : BaseBehaviour
 {
     public override BaseBehaviourData Data { get => data; set => data = (AreaOfEffectData)value; }
-    [SerializeField] protected new AreaOfEffectData data;
+    [SerializeField] private AreaOfEffectData data;
 
 	public override void Initialize()
 	{

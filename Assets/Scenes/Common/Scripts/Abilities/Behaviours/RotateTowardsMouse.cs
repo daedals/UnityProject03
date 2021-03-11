@@ -6,7 +6,7 @@ using Mirror;
 public class RotateTowardsMouse : BaseBehaviour, IRotationModifier
 {
     public override BaseBehaviourData Data { get => data; set => data = (RotateTowardsMouseData)value; }
-	[SerializeField] protected new RotateTowardsMouseData data;
+	[SerializeField] private RotateTowardsMouseData data;
 
 
     public Quaternion RMValue { get; private set; }

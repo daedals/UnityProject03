@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using System.Linq;
+using System;
 
 /*##########################################################################################################################
 
@@ -17,10 +18,14 @@ prefabs component "PlayerProfile") from the Database.
 
 public class AbilityDatabase : NetworkBehaviour
 {
-    private Dictionary<string, GameObject> Database = new Dictionary<string, GameObject>();
-    private SyncDictionary<string, System.Guid> AssetIds = new SyncDictionary<string, System.Guid>();
+    private Dictionary<string, AbilityTemplate> Database = new Dictionary<string, AbilityTemplate>();
+
+    [SerializeField] private GameObject abilityTemplate;
+    private const string abilityTemplateIdentifier = "AbilityTemplate";
 
     public static AbilityDatabase Instance { get; private set; }
+
+    public static event Action AllPlayersConnected;
 
     private NetworkManagerCustom _room;
     private NetworkManagerCustom Room
@@ -37,12 +42,18 @@ public class AbilityDatabase : NetworkBehaviour
         if (Instance) throw new System.Exception("There is already an Instance of AbilityDatabase.");
 
         Instance = this;
+
+        LoadAbilityData();
 	}
 	
 
     [Server]
     public override void OnStartServer()
     {
+        abilityTemplate = Room.spawnPrefabs.Find(prefab => prefab.name == abilityTemplateIdentifier);
+
+        if (abilityTemplate == null) throw new System.Exception("No dummy ability found.");
+
         LoadAbilityData();
 
         NetworkManagerCustom.OnServerStopped += CleanUpServer;
@@ -66,79 +77,63 @@ public class AbilityDatabase : NetworkBehaviour
 
         Debug.Log("All Players connected. Setting up abilities.");
 
-        RpcLoadAbilityData();
+        RpcBroadcastPlayersConnected();
     }
 
     void LoadAbilityData()
     {
         var abilities = Resources.LoadAll<AbilityTemplate>("Abilities") as AbilityTemplate[];
 
-        foreach (AbilityTemplate template in abilities) if (!Database.ContainsKey(template.name))
+        foreach (AbilityTemplate template in abilities)
         {
-            GameObject abilityObject = template.CreateAbilityObject();
-            abilityObject.transform.parent = this.transform;
-
-            if (NetworkServer.active)
-            {
-                Room.spawnPrefabs.Add(abilityObject);
-            }
-
-            Database[template.Name] = abilityObject;
-
-            ClientScene.RegisterPrefab(abilityObject, GetAssetId(template.name));
-
-            Debug.Log("Loaded Ability: " + template.Name + " " + abilityObject.GetComponent<NetworkIdentity>().assetId);
+            Database[template.name] = template;
         }
     }
 
-    private System.Guid GetAssetId(string name)
-    {
-        if (AssetIds.ContainsKey(name)) return AssetIds[name];
-
-        if (NetworkServer.active)
-        {
-            System.Guid assetId = System.Guid.NewGuid();
-            AssetIds[name] = assetId;
-
-            return assetId;
-        }
-
-        throw new System.Exception("Unknown asset id.");
-    }
-
-    [Command(ignoreAuthority = true)]
+    [Command(requiresAuthority = false)]
     public void CmdSetupAbility(uint netId, string abilityName)
     {
         if (!Database.ContainsKey(abilityName)) throw new System.Exception("Unknown ability " + abilityName);
 
-        GameObject player = NetworkIdentity.spawned[netId].gameObject;
+        if (NetworkIdentity.spawned.TryGetValue(netId, out NetworkIdentity player))
+        {
+            Debug.Log("Spawning in Ability Object for player " + player.connectionToClient);
 
-        if (player == null) throw new System.Exception("No player instance found wiht netId " + netId);
+            GameObject abilityObj = Instantiate(abilityTemplate);
 
-        GameObject abilityObj = Instantiate(Database[abilityName], Vector3.zero, Quaternion.identity);
-        NetworkServer.Spawn(abilityObj, player.GetComponent<NetworkIdentity>().connectionToClient);
+            NetworkServer.Spawn(abilityObj, player.connectionToClient);
 
-        RpcSetupAbility(netId, abilityObj.GetComponent<NetworkIdentity>().netId);
+            uint abilityNetId = abilityObj.GetComponent<NetworkIdentity>().netId;
 
-        player.GetComponent<PlayerAbilityManager>().TargetActivateAbility(connectionToClient, abilityName, abilityObj.GetComponent<NetworkIdentity>().netId);
+            if (!Database[abilityName].Parse(abilityNetId, player.netId))
+                throw new System.Exception("Parsing Ability from template failed on Server.");
+
+            RpcSetupAbility(abilityName, abilityNetId, player.netId);
+
+            TargetSetupAbility(player.connectionToClient, player.netId, abilityName);
+
+            return;
+        }
+
+        throw new System.Exception("No player instance found wiht netId " + netId);
     }
 
     [ClientRpc]
-    private void RpcSetupAbility(uint playerNetId, uint abilityNetId)
+    private void RpcSetupAbility(string abilityName, uint templateNetId, uint playerNetId)
     {
-        GameObject player = NetworkIdentity.spawned[playerNetId].gameObject;
-        GameObject ability = NetworkIdentity.spawned[abilityNetId].gameObject;
-
-        ability.transform.parent = player.transform;
+        if (!Database[abilityName].Parse(templateNetId, playerNetId))
+            throw new System.Exception("Parsing Ability from template failed on Client.");
     }
 
-    public static event System.Action AbilityDataLoaded;
+    [TargetRpc]
+    private void TargetSetupAbility(NetworkConnection conn, uint netId, string abilityName)
+    {
+        if (NetworkIdentity.spawned.TryGetValue(netId, out NetworkIdentity target))
+        {
+            target.GetComponent<PlayerAbilityManager>().ActivateAbility(abilityName);
+        }
+    }
 
     [ClientRpc]
-    public void RpcLoadAbilityData()
-    {
-        LoadAbilityData();
-
-        AbilityDataLoaded?.Invoke();
-    }
+    private void RpcBroadcastPlayersConnected() => AllPlayersConnected?.Invoke();
 }

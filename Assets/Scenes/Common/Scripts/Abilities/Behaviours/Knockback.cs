@@ -6,7 +6,7 @@ using Mirror;
 public class Knockback : BaseBehaviour
 {
     public override BaseBehaviourData Data { get => data; set => data = (KnockbackData)value; }
-    [SerializeField] protected new KnockbackData data;
+    [SerializeField] private KnockbackData data;
 
 	public override void Initialize()
 	{

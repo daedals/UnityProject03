@@ -12,7 +12,7 @@ public class ChannelingBar : BaseBehaviour
     private Coroutine fade;
     
     public override BaseBehaviourData Data { get => data; set => data = (ChannelingBarData)value; }
-    [SerializeField] protected new ChannelingBarData data;
+    [SerializeField] private ChannelingBarData data;
 
 	public override void Initialize()
 	{

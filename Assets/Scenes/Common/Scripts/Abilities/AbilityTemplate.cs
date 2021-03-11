@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Mirror;
 
 public class AbilityTemplate : ScriptableObject
 {
@@ -21,19 +22,24 @@ public class AbilityTemplate : ScriptableObject
     [Header("Behaviours")]
     [SerializeField] public List<BaseBehaviourData> behaviours = new List<BaseBehaviourData>();
 
-	public GameObject CreateAbilityObject()
+	public bool Parse(uint templateNetId, uint ownerNetId)
 	{
-		GameObject obj = new GameObject(Name);
-		Ability ability = obj.AddComponent<Ability>();
-
-		ability.template = this;
-
-		foreach (BaseBehaviourData behaviour in behaviours)
+		if (NetworkIdentity.spawned.TryGetValue(ownerNetId, out NetworkIdentity owner) && NetworkIdentity.spawned.TryGetValue(templateNetId, out NetworkIdentity template))
 		{
-			behaviour.AddBehaviourScript(obj);
+			template.transform.parent = owner.transform;
+			template.name = Name;
+
+			template.GetComponent<Ability>().template = this;
+
+			foreach (BaseBehaviourData behaviour in behaviours)
+			{
+				behaviour.Setup(template.gameObject);
+			}
+
+			return true;
 		}
 
-		return obj;
+		return false;
 	}
 
 }

@@ -16,15 +16,17 @@ public abstract class BaseBehaviourData : ScriptableObject
 		protected set => executionMask = value;
 	}
 
-	public void AddBehaviourScript(GameObject obj)
+	public void Setup(GameObject obj)
 	{
-		if (obj.GetComponent<Ability>() == null) throw new System.Exception("Could not assign behaviour to GAmeObject wihtout ability script.");
+		if (obj.GetComponent<Ability>() == null) throw new System.Exception("Could not assign behaviour to GameObject wihtout ability script.");
 
 		string s = this.GetType().ToString();
 		string behaviourName = s.Substring(0, s.Length - 4);
 
-		var behaviour = obj.AddComponent(System.Type.GetType(behaviourName)) as BaseBehaviour;
+		var behaviour = obj.GetComponent(System.Type.GetType(behaviourName)) as BaseBehaviour;
 		behaviour.Data = this;
+
+		behaviour.enabled = true;
 	}
 }
 
@@ -48,10 +50,9 @@ public abstract class BaseBehaviour : NetworkBehaviour
 	// the following to types are a hacky method to use type covariance in c# 
 	// see: https://stackoverflow.com/questions/421851/how-to-return-subtype-in-overridden-method-of-subclass-in-c
 
-	public virtual BaseBehaviourData Data { get => data; set => data = value; }
-	protected BaseBehaviourData data;
+	public virtual BaseBehaviourData Data { get; set;}
 
-    public virtual void Initialize() {}
+	public virtual void Initialize() {}
 
     public virtual void Tick(BaseAbilityState.AbilityStateContext ctx) {}
     public virtual void OnEnter(BaseAbilityState.AbilityStateContext ctx) {}

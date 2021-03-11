@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Mirror;
+using System.Linq;
 
 public class Ability : NetworkBehaviour
 {
@@ -20,7 +21,7 @@ public class Ability : NetworkBehaviour
         owner = root.gameObject;
         stateMachine = new StateMachine();
 
-        behaviours = new List<BaseBehaviour>(transform.GetComponents<BaseBehaviour>());
+        behaviours = new List<BaseBehaviour>(transform.GetComponents<BaseBehaviour>()).FindAll(behaviour => behaviour.enabled == true);
 
         foreach (BaseBehaviour behaviour in behaviours)
         {

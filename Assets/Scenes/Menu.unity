@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5866,10 +5866,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   port: 7777
   NoDelay: 1
+  SendTimeout: 5000
+  ReceiveTimeout: 30000
   serverMaxMessageSize: 16384
   serverMaxReceivesPerTick: 10000
+  serverSendQueueLimitPerConnection: 10000
+  serverReceiveQueueLimitPerConnection: 10000
   clientMaxMessageSize: 16384
   clientMaxReceivesPerTick: 1000
+  clientSendQueueLimit: 10000
+  clientReceiveQueueLimit: 10000
 --- !u!114 &1985367595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5887,6 +5893,8 @@ MonoBehaviour:
   autoStartServerBuild: 1
   showDebugMessages: 0
   serverTickRate: 60
+  serverBatching: 0
+  serverBatchInterval: 0
   offlineScene: 
   onlineScene: Assets/Scenes/Menu.unity
   transport: {fileID: 1985367594}
@@ -6458,6 +6466,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DebugUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 5763804458249033964, guid: 2798d164957cef64d9413fc78f586e8e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7214871392995214070, guid: 2798d164957cef64d9413fc78f586e8e,
         type: 3}

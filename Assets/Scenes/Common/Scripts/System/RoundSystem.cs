@@ -53,6 +53,8 @@ public class RoundSystem : NetworkBehaviour
     {
         if (Room.GamePlayers.Count(x => x.connectionToClient.isReady) != Room.GamePlayers.Count) return;
 
+        Debug.Log("All players connected. Initiating Countdown.");
+
         _animator.enabled = true;
 
         RpcStartCountdown();

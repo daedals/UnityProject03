@@ -46,6 +46,8 @@ public class PlayerSpawnSystem : NetworkBehaviour
 
         GameObject playerInstance = Instantiate(_playerPrefab, _spawnPoints[_nextIndex].position, _spawnPoints[_nextIndex].rotation);
 
+        Debug.Log("Spawning in player");
+
         NetworkServer.Spawn(playerInstance, conn);
 
         playerInstance.GetComponent<HealthHandler>().PlayerDeath += OnPlayerDeath;

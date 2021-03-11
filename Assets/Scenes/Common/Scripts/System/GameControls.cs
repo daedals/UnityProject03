@@ -1,4 +1,4 @@
-// GENERATED AUTOMATICALLY FROM 'Assets/Scenes/SampleMap01/Scripts/GameControls.inputactions'
+// GENERATED AUTOMATICALLY FROM 'Assets/Scenes/Common/Scripts/System/GameControls.inputactions'
 
 using System;
 using System.Collections;
