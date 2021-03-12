@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class ChannelingBar : BaseBehaviour
 {
-    private Slider _slider = null;
-    private Image _fill = null;
+    [SerializeField] private Slider _slider = null;
+    [SerializeField] private Image _fill = null;
 
     private Color _fillcolor;
     private Coroutine fade;

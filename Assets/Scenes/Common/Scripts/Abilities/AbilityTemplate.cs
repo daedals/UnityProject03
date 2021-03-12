@@ -4,6 +4,8 @@ using UnityEngine;
 using System;
 using Mirror;
 
+[System.Serializable]
+[CreateAssetMenu(menuName = "Ability/New Ability")]
 public class AbilityTemplate : ScriptableObject
 {
     [SerializeField] public string Name = "New Ability";
@@ -16,7 +18,8 @@ public class AbilityTemplate : ScriptableObject
 	[SerializeField] public float interruptionDuration;
 
 
-    //This is for easier serialisation of behaviours
+	[Header("State Settings")]
+	[SerializeField] public List<ExecutionMaskDurationEntry> StateDurations;
 
 
     [Header("Behaviours")]
@@ -29,7 +32,7 @@ public class AbilityTemplate : ScriptableObject
 			template.transform.parent = owner.transform;
 			template.name = Name;
 
-			template.GetComponent<Ability>().template = this;
+			template.GetComponent<MecanimAbility>().Data = this;
 
 			foreach (BaseBehaviourData behaviour in behaviours)
 			{

@@ -191,7 +191,7 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
     
     private void OnTargetHit(Projectile projectile, GameObject other)
     {
-        GetComponent<Ability>().SignalTargetHit(projectile.gameObject, other);
+        GetComponent<MecanimAbility>().SignalTargetHit(projectile.gameObject, other);
 
         UnspawnPrefab(projectile.gameObject);
     }
