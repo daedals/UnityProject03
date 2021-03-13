@@ -10,7 +10,7 @@ public class AreaOfEffect : BaseBehaviour
 
 	public override void Initialize()
 	{
-		GetComponent<Ability>().AbilityHitTarget += OnAbilityTargetHit;
+		GetComponent<MecanimAbility>().AbilityHitTarget += OnAbilityTargetHit;
 	}
 
 	private void OnAbilityTargetHit(GameObject obj, GameObject other)
@@ -25,6 +25,6 @@ public class AreaOfEffect : BaseBehaviour
 
         Debug.Log($"{name} identified {affectedObjs.Count} target{(affectedObjs.Count != 1 ? "s" : "")} in range {data.range} with tag \"{data.affectedTag}\"");
 
-        GetComponent<Ability>().SignalTargetsIdentified(obj, affectedObjs);
+        GetComponent<MecanimAbility>().SignalTargetsIdentified(obj, affectedObjs);
 	}
 }

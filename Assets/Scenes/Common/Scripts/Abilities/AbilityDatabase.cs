@@ -21,7 +21,7 @@ public class AbilityDatabase : NetworkBehaviour
     private Dictionary<string, AbilityTemplate> Database = new Dictionary<string, AbilityTemplate>();
 
     [SerializeField] private GameObject abilityTemplate;
-    private const string abilityTemplateIdentifier = "AbilityTemplate";
+    private const string abilityTemplateIdentifier = "MecanimAbilityTemplate";
 
     public static AbilityDatabase Instance { get; private set; }
 
@@ -110,6 +110,9 @@ public class AbilityDatabase : NetworkBehaviour
 
             RpcSetupAbility(abilityName, abilityNetId, player.netId);
 
+            abilityObj.GetComponent<MecanimAbility>().enabled = true;
+            RpcEnableAbility(abilityNetId);
+
             TargetSetupAbility(player.connectionToClient, player.netId, abilityName);
 
             return;
@@ -117,6 +120,9 @@ public class AbilityDatabase : NetworkBehaviour
 
         throw new System.Exception("No player instance found wiht netId " + netId);
     }
+
+    [ClientRpc]
+    private void RpcEnableAbility(uint netId) => NetworkIdentity.spawned[netId].GetComponent<MecanimAbility>().enabled = true;
 
     [ClientRpc]
     private void RpcSetupAbility(string abilityName, uint templateNetId, uint playerNetId)

@@ -18,7 +18,7 @@ public class Projectile : NetworkBehaviour
 
     private void OnEnable()
     {
-        if(initialized && fired) 
+        if(hasAuthority && initialized && fired) 
         {
             StartCoroutine(LifeTimeCoroutine());
         }

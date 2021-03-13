@@ -7,16 +7,15 @@ public class PlayerAbilityManager : NetworkBehaviour
 {
     [SerializeField] private PlayerProfile profile = null;
 
-    private Ability ability1;
-    [SerializeField] public string Ability1State;
-    private Ability ability2;
-    private Ability ability3;
+    private MecanimAbility ability1;
+    private MecanimAbility ability2;
+    private MecanimAbility ability3;
 
 	public override void OnStartAuthority()
 	{
         enabled = true;
         
-        Debug.Log("Fetching abilities for player.");
+        Debug.Log("PlayerManager assigned to Player.");
 
         AbilityDatabase.AllPlayersConnected += OnAllPlayersConnected;
 	}
@@ -47,7 +46,7 @@ public class PlayerAbilityManager : NetworkBehaviour
 
             if (obj == null) throw new System.Exception($"Ability {abilityName} could not be found in current context.");
 
-            ability1 = obj.GetComponent<Ability>();
+            ability1 = obj.GetComponent<MecanimAbility>();
 
             Debug.Log("Fetched " + abilityName);
 
@@ -60,16 +59,6 @@ public class PlayerAbilityManager : NetworkBehaviour
         /* TODO: repeat for other abilities */
 
         throw new System.Exception("Ability activiation for player failed.");
-    }
-
-    private void Update()
-    {
-        if (ability1 != null)
-        {
-            if (ability1.stateMachine == null) Debug.Log("no statemachine");
-            if (ability1.stateMachine.currentState == null) Debug.Log("no currentState");
-            Ability1State = ability1.stateMachine.currentState.GetType().ToString();
-        }
     }
 
     private void OnDestroy()

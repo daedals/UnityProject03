@@ -10,7 +10,7 @@ public class Knockback : BaseBehaviour
 
 	public override void Initialize()
 	{
-		GetComponent<Ability>().AbilityTargetsIdentified += OnAbilityTargetsIdentified;
+		GetComponent<MecanimAbility>().AbilityTargetsIdentified += OnAbilityTargetsIdentified;
 	}
 
 	private void OnAbilityTargetsIdentified(GameObject obj, List<GameObject> targets)
