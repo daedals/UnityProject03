@@ -100,10 +100,10 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
         Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
 
         projectile.Fire( Vector3.ProjectOnPlane(
-            mousePosition - instance.transform.position,
+            mousePosition - position,
             Vector3.up
             ));
-            
+
         CmdSetInstanceActive(netId, true);
 
         return instance;
