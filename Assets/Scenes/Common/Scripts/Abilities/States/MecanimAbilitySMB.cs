@@ -49,7 +49,7 @@ public class MecanimAbilitySMB : SceneLinkedSMB<MecanimAbility>
 	public override void OnSLStateNoTransitionUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex, AnimatorControllerPlayable controller)
 	{
 		base.OnSLStateNoTransitionUpdate(animator, stateInfo, layerIndex, controller);
-        
+
         remainingDuration = Mathf.Max(remainingDuration - Time.deltaTime, 0);
 
         if (remainingDuration == 0 ) animator.SetTrigger("StateCompleted");

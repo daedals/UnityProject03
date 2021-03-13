@@ -7,8 +7,6 @@ public class MecanimAbility : MonoBehaviour
     public AbilityTemplate Data { get; set; }
     public List<BaseBehaviour> behaviours;
 
-    public GameObject owner;
-
     [SerializeField] private Animator animator = null;
 
     private void OnEnable()
@@ -21,8 +19,6 @@ public class MecanimAbility : MonoBehaviour
         Transform root = transform.parent;
 
         if (root.GetComponent<PlayerAbilityManager>() == null) throw new System.Exception("Abilities root object has no AbilityManager");
-
-        owner = root.gameObject;
 
         behaviours = new List<BaseBehaviour>(transform.GetComponents<BaseBehaviour>()).FindAll(behaviour => behaviour.enabled == true);
 

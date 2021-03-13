@@ -35,8 +35,9 @@ public class RotateTowardsMouse : BaseBehaviour, IRotationModifier
 
     private void SetRMValue()
     {
-        Vector3 relativeMousePosition = Vector3.ProjectOnPlane(PlayerInputHandler.GetMousePositionWorldSpace() - transform.position, Vector3.up);
-        RMValue = Quaternion.Euler(0f, Vector3.SignedAngle(Vector3.forward, relativeMousePosition, Vector3.up), 0f);
+        Vector3 relativeMousePosition = Vector3.ProjectOnPlane(PlayerInputHandler.GetMousePositionWorldSpace() - transform.parent.position, Vector3.up);
+        float angle = Vector3.SignedAngle(Vector3.forward, relativeMousePosition, Vector3.up);
+        RMValue = Quaternion.Euler(0f, angle, 0f);
     }
 
 	public override void OnExit(BaseAbilityState.AbilityStateContext ctx)

@@ -82,14 +82,28 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 	public GameObject SpawnPrefab(Vector3 position, Quaternion rotation)
 	{
         GameObject instance = GetFromPool();
-
+        
         if (instance == null) return null;
+
+        /* TODO: unsubscribing might not be necessary, if subscription is done in CmdSpawnPrefab */
+        Projectile projectile = instance.GetComponent<Projectile>();
+
+        projectile.LifeTimeEnded += OnLifeTimeEnded;
+        projectile.TargetHit += OnTargetHit;
 
         Debug.Log("Grabbing " + Prefab.name + " from pool.");
 
         uint netId = instance.GetComponent<NetworkIdentity>().netId;
 
         CmdSetProjectileTransform(netId, position, rotation);
+
+        Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
+
+        projectile.Fire( Vector3.ProjectOnPlane(
+            mousePosition - instance.transform.position,
+            Vector3.up
+            ));
+            
         CmdSetInstanceActive(netId, true);
 
         return instance;
@@ -139,12 +153,6 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
 	{
         Debug.Log("Re-pooling " + instance.name);
 
-        /* TODO: unsubscribing might not be necessary, if subscription is done in CmdSpawnPrefab */
-        Projectile projectile = instance.GetComponent<Projectile>();
-
-        projectile.LifeTimeEnded -= OnLifeTimeEnded;
-        projectile.TargetHit -= OnTargetHit;
-
         CmdSetInstanceActive(instance.GetComponent<NetworkIdentity>().netId, false);
 
         instance.transform.position = Vector3.zero;
@@ -169,24 +177,6 @@ public class LinearProjectile : BaseBehaviour, IPrefabPool
         }
 
         GameObject instance = SpawnPrefab(spawn.position, spawn.rotation);
-
-        if (instance == null) return;
-
-        Projectile projectile = instance.GetComponent<Projectile>();
-
-        Vector3 mousePosition = PlayerInputHandler.GetMousePositionWorldSpace();
-
-        projectile.LifeTimeEnded += OnLifeTimeEnded;
-        projectile.TargetHit += OnTargetHit;
-
-        /* TODO: this currently works, but if it breaks in future it might be because the projectile gets enabled over a clientrpc
-                 and only then fired. in the onenable method of the projectile the lifetime coroutine is started if it is fired
-                 and it is only fired because the delay of the clientrps call */
-
-        projectile.Fire( Vector3.ProjectOnPlane(
-            mousePosition - instance.transform.position,
-            Vector3.up
-            ));
     }
     
     private void OnTargetHit(Projectile projectile, GameObject other)
