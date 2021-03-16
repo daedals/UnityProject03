@@ -55,9 +55,10 @@ public class PlayerSpawnSystem : NetworkBehaviour
         _nextIndex++;
     }
 
+    [Server]
     private void OnPlayerDeath(uint netId)
     {
         GameObject playerInstance = NetworkIdentity.spawned[netId].gameObject;
-        NetworkServer.UnSpawn(playerInstance);
+        NetworkServer.Destroy(playerInstance);
     }
 }

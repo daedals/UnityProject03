@@ -46,8 +46,8 @@ public class HealthHandler : NetworkBehaviour
 
 	public override void OnStartServer() => SetHealth(_playerData.MaximumHealth);
 
-	[Command]
-	public void CmdDealDamage(float damage) => SetHealth(Mathf.Max(CurrentHealth - damage, 0f));
+	[Server]
+	public void DealDamage(float damage) => SetHealth(Mathf.Max(CurrentHealth - damage, 0f));
 
 	#endregion
 }

@@ -2,11 +2,10 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class LavaBehavior : MonoBehaviour
+public class LavaBehavior : NetworkBehaviour
 {
-    [Header("References")]
-    [SerializeField] private Collider _collider = null;
 
     [Header("Settings")]
     [SerializeField] public float _damagePerSecond = 5f;
@@ -14,6 +13,7 @@ public class LavaBehavior : MonoBehaviour
     private List<HealthHandler> _healthHandlers = new List<HealthHandler>();
 
 
+    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Player entered trigger." + other);
@@ -26,6 +26,7 @@ public class LavaBehavior : MonoBehaviour
         else Debug.Log("Failed to fetch HealthHandler from Entity.");
     }
 
+    [ServerCallback]
     private void OnTriggerExit(Collider other)
     {
         Debug.Log("Player left trigger.");
@@ -37,11 +38,20 @@ public class LavaBehavior : MonoBehaviour
         }
     }
 
+    [Server]
     private void Update()
     {
-        foreach(HealthHandler obj in _healthHandlers)
+        // ToList() is a hack to avoid the error that the collection was modified during enumeration, so we just copy it
+        foreach(HealthHandler obj in _healthHandlers.ToList())
         {
-            obj.CmdDealDamage(_damagePerSecond * Time.deltaTime);
+            if (obj == null)
+            {
+                // object has been destroyed because player died
+                _healthHandlers.Remove(obj);
+                continue;
+            }
+
+            obj.DealDamage(_damagePerSecond * Time.deltaTime);
         }
     }
 }
