@@ -12,7 +12,7 @@ public class NetworkManagerCustom : NetworkManager
     [Scene] [SerializeField] private string menuScene = string.Empty;
 
     [Header("Maps")]
-    [SerializeField] private int _numperOfRounds = 1;
+    [SerializeField] private int _numberOfRounds = 1;
     [SerializeField] private MapSet _mapSet = null;
 
     [Header("Menu")]
@@ -145,10 +145,15 @@ public class NetworkManagerCustom : NetworkManager
         {
             if (!IsReadyToStart()) return;
 
-            _mapHandler = new MapHandler(_mapSet, _numperOfRounds);
+            _mapHandler = new MapHandler(_mapSet, _numberOfRounds);
 
             ServerChangeScene(_mapHandler.NextMap);
         }
+    }
+
+    public void NextRound()
+    {
+        ServerChangeScene(_mapHandler.NextMap);
     }
 
 	public override void ServerChangeScene(string newSceneName)
